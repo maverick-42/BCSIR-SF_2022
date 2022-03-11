@@ -1,4 +1,5 @@
 
+
 #include <ETH.h>
 #include <WiFi.h>
 #include <WiFiAP.h>
@@ -93,7 +94,6 @@ Adafruit_MQTT_Publish TTPAFC = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME"/feeds/
 AsyncWebServer server(80);
 void MQTT_connect();
 int bluedata;
-int variable = 0;
 
 
 /****************************************************************************************************************************************************************************************************************************************************************************/
@@ -251,16 +251,21 @@ void loop()
         if (content.substring(1) == User_A)
           {
             String Balance_A = String(Available_Balance_A);
+            String Message_X = Message_U + Bus;
+            String Message_Z = Message_A + Balance_A + BDT;
+            const char* Message_K = Message_X.c_str();
+            const char* Message_L = Message_Z.c_str();                        
             
             Serial.println("Passenger boarded at 'Uttara' station.");
             Serial.println("Passenger Name : A ");
-            Serial.println(Message_U + Bus);
-            Serial.println(Message_A + Balance_A + BDT);
+            Serial.println(Message_K);
+            Serial.println(Message_L);
+            Serial.println();
             
             TTPAFC.publish("Passenger boarded at 'Uttara' station.");
             TTPAFC.publish("Passenger Name : A ");
-            TTPAFC.publish(Message_U + Bus);
-            TTPAFC.publish(Message_A + Balance_A + BDT);            
+            TTPAFC.publish(Message_K);
+            TTPAFC.publish(Message_L);            
             Serial.println();
                 
                 if (content.substring(1) == Mirpur_10)
@@ -275,12 +280,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 30;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);                        
                       }                      
@@ -298,14 +304,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 40;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }                      
                       else{}  
                   }
@@ -321,14 +328,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 60;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }                      
                       else{} 
                   }
@@ -344,14 +352,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 70;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }                      
                       else{}  
                   }                                        
@@ -361,12 +370,22 @@ void loop()
 
         if (content.substring(1) == User_B)
           {
+            String Balance_B = String(Available_Balance_B);
+            String Message_X = Message_U + Bus;
+            String Message_Z = Message_A + Balance_B + BDT;
+            const char* Message_K = Message_X.c_str();
+            const char* Message_L = Message_Z.c_str();  
+            
             Serial.println("Passenger boarded at 'Uttara' station.");
             Serial.println("Passenger Name : B ");
-            Serial.println(Message_U + Bus);
-            String Balance_B = String(Available_Balance_B);
-            Serial.println(Message_A + Balance_B + BDT);
+            Serial.println(Message_K);
+            Serial.println(Message_L);
             Serial.println();
+                        
+            TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+            TTPAFC.publish("Passenger Name : B ");
+            TTPAFC.publish(Message_K);
+            TTPAFC.publish(Message_L);  
                 
                 if (content.substring(1) == Mirpur_10)
                   {
@@ -380,14 +399,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 30;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }                      
                       else{}        
                   }
@@ -403,14 +423,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 40;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }                      
                       else{}  
                   }
@@ -426,14 +447,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 60;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }                      
                       else{} 
                   }
@@ -449,14 +471,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 70;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }                      
                       else{}  
                   }                                        
@@ -467,15 +490,20 @@ void loop()
             if (content.substring(1) == User_C)
             {
               String Balance_C = String(Available_Balance_C);
-              Serial.println(Message_U + Bus);
+              String Message_X = Message_U + Bus;
+              String Message_Z = Message_A + Balance_C + BDT;
+              const char* Message_K = Message_X.c_str();
+              const char* Message_L = Message_Z.c_str(); 
+                           
+              Serial.println(Message_K);
               Serial.println("User Name : C ");
-              Serial.println(Message_A + Balance_C + BDT); 
+              Serial.println(Message_L); 
               Serial.println(Message_T);
-              Serial.println(Message_P);
+              Serial.println(Message_Y);
 
-              TTPAFC.publish(Message_U + Bus);
+              TTPAFC.publish(Message_K);
               TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_A + Balance_C + BDT);
+              TTPAFC.publish(Message_L);
               TTPAFC.publish(Message_T);
               TTPAFC.publish(Message_Y);    
             }
@@ -491,12 +519,23 @@ void loop()
      
                 if (content.substring(1) == User_A)
                  {
+                   String Balance_A = String(Available_Balance_A);
+                   String Message_X = Message_U + Bus;
+                   String Message_Z = Message_A + Balance_A + BDT;
+                   const char* Message_K = Message_X.c_str();
+                   const char* Message_L = Message_Z.c_str(); 
+                   
                    Serial.println("Passenger boarded at 'Mirpur-10' station.");
                    Serial.println("Passenger Name : A ");
-                   Serial.println(Message_U + Bus);
-                   String Balance_A = String(Available_Balance_A);
-                   Serial.println(Message_A + Balance_A + BDT);
+                   Serial.println(Message_K);
+                   Serial.println(Message_L);
                    Serial.println();
+                               
+                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+                   TTPAFC.publish("Passenger Name : A ");
+                   TTPAFC.publish(Message_K);
+                   TTPAFC.publish(Message_L);  
+                   
                   
                     if (content.substring(1) == Agargaon)
                      { 
@@ -510,14 +549,15 @@ void loop()
                           int    Current_Balance_A = Available_Balance_A - 10;
                           String Message_S         = String(Current_Balance_A);  
                           String Message           = Message_C + Message_S + BDT;
+                          const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
+                          Serial.println(Message1);
+                          Serial.println(Message_F);
+                          Serial.println(Safety_Measurement);
+
+                          TTPAFC.publish(Message1);
+                          TTPAFC.publish(Message_F);
+                          TTPAFC.publish(Safety_Measurement); 
                         }
                         else{} 
                      }
@@ -533,14 +573,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 30;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
+                        TTPAFC.publish(Safety_Measurement);  
                       }
                       else{}
                   }
@@ -556,12 +597,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 40;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -574,12 +616,22 @@ void loop()
      
                 if (content.substring(1) == User_B)
                  {
+                   String Balance_B = String(Available_Balance_B);
+                   String Message_X = Message_U + Bus;
+                   String Message_Z = Message_A + Balance_B + BDT;
+                   const char* Message_K = Message_X.c_str();
+                   const char* Message_L = Message_Z.c_str();
+                   
                    Serial.println("Passenger boarded at 'Mirpur-10' station.");
                    Serial.println("Passenger Name : B ");
-                   Serial.println(Message_U + Bus);
-                   String Balance_B = String(Available_Balance_B);
-                   Serial.println(Message_A + Balance_B + BDT);
+                   Serial.println(Message_K);
+                   Serial.println(Message_L);
                    Serial.println();
+                   
+                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+                   TTPAFC.publish("Passenger Name : B ");
+                   TTPAFC.publish(Message_K);
+                   TTPAFC.publish(Message_L);
                   
                     if (content.substring(1) == Agargaon)
                      { 
@@ -593,14 +645,15 @@ void loop()
                           int    Current_Balance_B = Available_Balance_B - 10;
                           String Message_S         = String(Current_Balance_B);  
                           String Message           = Message_C + Message_S + BDT;
+                          const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
+                          Serial.println(Message1);
+                          Serial.println(Message_F);
+                          Serial.println(Safety_Measurement);
+
+                          TTPAFC.publish(Message1);
+                          TTPAFC.publish(Message_F);
+                          TTPAFC.publish(Safety_Measurement);   
                         }
                         else{} 
                      }
@@ -616,12 +669,13 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 30;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);  
                       }
@@ -639,12 +693,13 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 40;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -657,15 +712,20 @@ void loop()
             if (content.substring(1) == User_C)
             {
               String Balance_C = String(Available_Balance_C);
-              Serial.println(Message_U + Bus);
+              String Message_X = Message_U + Bus;
+              String Message_Z = Message_A + Balance_C + BDT;
+              const char* Message_K = Message_X.c_str();
+              const char* Message_L = Message_Z.c_str();
+              
+              Serial.println(Message_K);
               Serial.println("User Name : C ");
-              Serial.println(Message_A + Balance_C + BDT); 
+              Serial.println(Message_L); 
               Serial.println(Message_T);
-              Serial.println(Message_P);
+              Serial.println(Message_Y);
 
-              TTPAFC.publish(Message_U + Bus);
+              TTPAFC.publish(Message_K);
               TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_A + Balance_C + BDT);
+              TTPAFC.publish(Message_L);
               TTPAFC.publish(Message_T);
               TTPAFC.publish(Message_Y);    
             }
@@ -682,12 +742,22 @@ void loop()
 
               if (content.substring(1) == User_A)
               {
+                   String Balance_A = String(Available_Balance_A);
+                   String Message_X = Message_U + Bus;
+                   String Message_Z = Message_A + Balance_A + BDT;
+                   const char* Message_K = Message_X.c_str();
+                   const char* Message_L = Message_Z.c_str();
+                   
                    Serial.println("Passenger boarded at 'Agargaon' station.");
                    Serial.println("Passenger Name : A ");
-                   Serial.println(Message_U + Bus);
-                   String Balance_A = String(Available_Balance_A);
-                   Serial.println(Message_A + Balance_A + BDT);
+                   Serial.println(Message_K);
+                   Serial.println(Message_L);
                    Serial.println();
+                   
+                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+                   TTPAFC.publish("Passenger Name : A ");
+                   TTPAFC.publish(Message_K);
+                   TTPAFC.publish(Message_L);
 
                  if (content.substring(1) == Shahbag)
                   {
@@ -701,14 +771,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 20;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);    
+                        TTPAFC.publish(Safety_Measurement);   
                       }
                       else{}
                   } 
@@ -724,12 +795,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 30;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);  
                       }
@@ -741,12 +813,22 @@ void loop()
 
               if (content.substring(1) == User_B)
               {
+                   String Balance_B = String(Available_Balance_B);
+                   String Message_X = Message_U + Bus;
+                   String Message_Z = Message_A + Balance_B + BDT;
+                   const char* Message_K = Message_X.c_str();
+                   const char* Message_L = Message_Z.c_str();
+                   
                    Serial.println("Passenger boarded at 'Agargaon' station.");
                    Serial.println("Passenger Name : B ");
-                   Serial.println(Message_U + Bus);
-                   String Balance_B = String(Available_Balance_B);
-                   Serial.println(Message_A + Balance_B + BDT);
+                   Serial.println(Message_K);
+                   Serial.println(Message_L);
                    Serial.println();
+                   
+                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+                   TTPAFC.publish("Passenger Name : B ");
+                   TTPAFC.publish(Message_K);
+                   TTPAFC.publish(Message_L);
 
                  if (content.substring(1) == Shahbag)
                   {
@@ -760,12 +842,13 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 20;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);     
                       }
@@ -783,12 +866,13 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 30;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -801,15 +885,20 @@ void loop()
             if (content.substring(1) == User_C)
             {
               String Balance_C = String(Available_Balance_C);
-              Serial.println(Message_U + Bus);
+              String Message_X = Message_U + Bus;
+              String Message_Z = Message_A + Balance_C + BDT;
+              const char* Message_K = Message_X.c_str();
+              const char* Message_L = Message_Z.c_str();
+                   
+              Serial.println(Message_K);
               Serial.println("User Name : C ");
-              Serial.println(Message_A + Balance_C + BDT); 
+              Serial.println(Message_L); 
               Serial.println(Message_T);
-              Serial.println(Message_P);
+              Serial.println(Message_Y);
 
-              TTPAFC.publish(Message_U + Bus);
+              TTPAFC.publish(Message_K);
               TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_A + Balance_C + BDT);
+              TTPAFC.publish(Message_L);
               TTPAFC.publish(Message_T);
               TTPAFC.publish(Message_Y);   
             }
@@ -825,12 +914,22 @@ void loop()
 
               if (content.substring(1) == User_A)
               {
+                   String Balance_A = String(Available_Balance_A);
+                   String Message_X = Message_U + Bus;
+                   String Message_Z = Message_A + Balance_A + BDT;
+                   const char* Message_K = Message_X.c_str();
+                   const char* Message_L = Message_Z.c_str();
+                   
                    Serial.println("Passenger boarded at 'Shahbag' station.");
                    Serial.println("Passenger Name : A ");
-                   Serial.println(Message_U + Bus);
-                   String Balance_A = String(Available_Balance_A);
-                   Serial.println(Message_A + Balance_A + BDT);
+                   Serial.println(Message_K);
+                   Serial.println(Message_L);
                    Serial.println();
+                   
+                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+                   TTPAFC.publish("Passenger Name : A ");
+                   TTPAFC.publish(Message_K);
+                   TTPAFC.publish(Message_L);
                    
                  if (content.substring(1) == Motijheel)
                   {
@@ -844,12 +943,13 @@ void loop()
                         int Current_Balance_A = Available_Balance_A - 10;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement); 
                       }
@@ -861,12 +961,22 @@ void loop()
                
                if (content.substring(1) == User_B)
               {
+                   String Balance_B = String(Available_Balance_B);
+                   String Message_X = Message_U + Bus;
+                   String Message_Z = Message_A + Balance_B + BDT;
+                   const char* Message_K = Message_X.c_str();
+                   const char* Message_L = Message_Z.c_str();
+                   
                    Serial.println("Passenger boarded at 'Shahbag' station.");
                    Serial.println("Passenger Name : B ");
-                   Serial.println(Message_U + Bus);
-                   String Balance_B = String(Available_Balance_B);
-                   Serial.println(Message_A + Balance_B + BDT);
+                   Serial.println(Message_K);
+                   Serial.println(Message_L);
                    Serial.println();
+                   
+                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+                   TTPAFC.publish("Passenger Name : B ");
+                   TTPAFC.publish(Message_K);
+                   TTPAFC.publish(Message_L);
                    
                  if (content.substring(1) == Motijheel)
                   {
@@ -880,14 +990,15 @@ void loop()
                         int Current_Balance_B = Available_Balance_B - 10;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);
+                        TTPAFC.publish(Safety_Measurement); 
                       }
                       else{}
                   }                
@@ -898,15 +1009,20 @@ void loop()
             if (content.substring(1) == User_C)
             {
               String Balance_C = String(Available_Balance_C);
-              Serial.println(Message_U + Bus);
+              String Message_X = Message_U + Bus;
+              String Message_Z = Message_A + Balance_C + BDT;
+              const char* Message_K = Message_X.c_str();
+              const char* Message_L = Message_Z.c_str();
+              
+              Serial.println(Message_K);
               Serial.println("User Name : C ");
-              Serial.println(Message_A + Balance_C + BDT); 
+              Serial.println(Message_L); 
               Serial.println(Message_T);
-              Serial.println(Message_P);
+              Serial.println(Message_Y);
 
-              TTPAFC.publish(Message_U + Bus);
+              TTPAFC.publish(Message_K);
               TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_A + Balance_C + BDT);
+              TTPAFC.publish(Message_L);
               TTPAFC.publish(Message_T);
               TTPAFC.publish(Message_Y);    
             }
@@ -926,12 +1042,22 @@ void loop()
 
        if (content.substring(1) == User_A)
        {
+        String Balance_A = String(Available_Balance_A);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_A + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Motijheel' station.");
         Serial.println("Passenger Name : A ");
-        Serial.println(Message_U + Bus);
-        String Balance_A = String(Available_Balance_A);
-        Serial.println(Message_A + Balance_A + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+        
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : A ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);
     
                 if (content.substring(1) == Shahbag)
                   {
@@ -945,12 +1071,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 10;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -968,14 +1095,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 30;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
+                        TTPAFC.publish(Safety_Measurement);   
                       }
                       else{}   
                   }
@@ -991,14 +1119,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 40;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
+                        TTPAFC.publish(Safety_Measurement);    
                       }
                       else{}
                   }
@@ -1014,12 +1143,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 70;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);  
                       }
@@ -1031,12 +1161,22 @@ void loop()
 
        if (content.substring(1) == User_B)
        {
+        String Balance_B = String(Available_Balance_B);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_B + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Motijheel' station.");
         Serial.println("Passenger Name : B ");
-        Serial.println(Message_U + Bus);
-        String Balance_B = String(Available_Balance_B);
-        Serial.println(Message_A + Balance_B + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : B ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);
     
                 if (content.substring(1) == Shahbag)
                   {
@@ -1050,14 +1190,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 10;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
+                        TTPAFC.publish(Safety_Measurement);   
                       }
                       else{}
                   }
@@ -1073,14 +1214,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 30;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
+                        TTPAFC.publish(Safety_Measurement);    
                       }
                       else{}   
                   }
@@ -1096,14 +1238,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 40;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
+                        TTPAFC.publish(Safety_Measurement);  
                       }
                       else{}
                   }
@@ -1119,14 +1262,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 70;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
+                        TTPAFC.publish(Safety_Measurement); 
                       }
                       else{}
                   }                                        
@@ -1137,15 +1281,20 @@ void loop()
       if (content.substring(1) == User_C)
       {
         String Balance_C = String(Available_Balance_C);
-        Serial.println(Message_U + Bus);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_C + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
+        Serial.println(Message_K);
         Serial.println("User Name : C ");
-        Serial.println(Message_A + Balance_C + BDT); 
+        Serial.println(Message_L); 
         Serial.println(Message_T);
-        Serial.println(Message_P);
+        Serial.println(Message_Y);
 
-        TTPAFC.publish(Message_U + Bus);
+        TTPAFC.publish(Message_K);
         TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_A + Balance_C + BDT);
+        TTPAFC.publish(Message_L);
         TTPAFC.publish(Message_T);
         TTPAFC.publish(Message_Y);    
       }
@@ -1161,12 +1310,22 @@ void loop()
 
        if (content.substring(1) == User_A)
        {
+        String Balance_A = String(Available_Balance_A);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_A + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Shahbag' station.");
         Serial.println("Passenger Name : A ");
-        Serial.println(Message_U + Bus);
-        String Balance_A = String(Available_Balance_A);
-        Serial.println(Message_A + Balance_A + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+        
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : A ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);   
     
                 if (content.substring(1) == Agargaon)
                   {
@@ -1180,14 +1339,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 20;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
+                        TTPAFC.publish(Safety_Measurement);   
                       }
                       else{}
                   }
@@ -1203,12 +1363,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 30;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -1226,12 +1387,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 60;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -1243,12 +1405,22 @@ void loop()
 
        if (content.substring(1) == User_B)
        {
+        String Balance_B = String(Available_Balance_B);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_B + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Shahbag' station.");
         Serial.println("Passenger Name : B ");
-        Serial.println(Message_U + Bus);
-        String Balance_B = String(Available_Balance_B);
-        Serial.println(Message_A + Balance_B + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+        
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : B ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);    
     
                  if (content.substring(1) == Agargaon)
                   {
@@ -1262,14 +1434,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 20;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
+                        TTPAFC.publish(Safety_Measurement); 
                       }
                       else{}   
                   }
@@ -1285,12 +1458,13 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 30;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -1308,12 +1482,13 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 60;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -1326,15 +1501,20 @@ void loop()
       if (content.substring(1) == User_C)
       {
         String Balance_C = String(Available_Balance_C);
-        Serial.println(Message_U + Bus);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_C + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
+        Serial.println(Message_K);
         Serial.println("User Name : C ");
-        Serial.println(Message_A + Balance_C + BDT); 
+        Serial.println(Message_L); 
         Serial.println(Message_T);
-        Serial.println(Message_P);
+        Serial.println(Message_Y);
 
-        TTPAFC.publish(Message_U + Bus);
+        TTPAFC.publish(Message_K);
         TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_A + Balance_C + BDT);
+        TTPAFC.publish(Message_L);
         TTPAFC.publish(Message_T);
         TTPAFC.publish(Message_Y);    
       }
@@ -1350,12 +1530,22 @@ void loop()
 
        if (content.substring(1) == User_A)
        {
+        String Balance_A = String(Available_Balance_A);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_A + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Agargaon' station.");
         Serial.println("Passenger Name : A ");
-        Serial.println(Message_U + Bus);
-        String Balance_A = String(Available_Balance_A);
-        Serial.println(Message_A + Balance_A + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : A ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);    
     
                  if (content.substring(1) == Mirpur_10)
                   {
@@ -1369,12 +1559,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 10;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);  
                       }
@@ -1392,12 +1583,13 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 40;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement);   
                       }
@@ -1409,12 +1601,22 @@ void loop()
 
        if (content.substring(1) == User_B)
        {
+        String Balance_B = String(Available_Balance_B);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_B + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Agargaon' station.");
         Serial.println("Passenger Name : B ");
-        Serial.println(Message_U + Bus);
-        String Balance_B = String(Available_Balance_B);
-        Serial.println(Message_A + Balance_B + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : B ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);    
     
                  if (content.substring(1) == Mirpur_10)
                   {
@@ -1428,14 +1630,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 10;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
+                        TTPAFC.publish(Safety_Measurement);  
                       }
                       else{}
                   }
@@ -1451,14 +1654,15 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 40;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
+                        TTPAFC.publish(Safety_Measurement);  
                       }
                       else{}
                   }                                        
@@ -1469,15 +1673,20 @@ void loop()
       if (content.substring(1) == User_C)
       {
         String Balance_C = String(Available_Balance_C);
-        Serial.println(Message_U + Bus);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_C + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
+        Serial.println(Message_K);
         Serial.println("User Name : C ");
-        Serial.println(Message_A + Balance_C + BDT); 
+        Serial.println(Message_L); 
         Serial.println(Message_T);
-        Serial.println(Message_P);
+        Serial.println(Message_Y);
 
-        TTPAFC.publish(Message_U + Bus);
+        TTPAFC.publish(Message_K);
         TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_A + Balance_C + BDT);
+        TTPAFC.publish(Message_L);
         TTPAFC.publish(Message_T);
         TTPAFC.publish(Message_Y);    
       }
@@ -1493,12 +1702,22 @@ void loop()
 
        if (content.substring(1) == User_A)
        {
+        String Balance_A = String(Available_Balance_A);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_A + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Mirpur-10' station");
         Serial.println("Passenger Name : A ");
-        Serial.println(Message_U + Bus);
-        String Balance_A = String(Available_Balance_A);
-        Serial.println(Message_A + Balance_A + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : A ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);    
     
                  if (content.substring(1) == Uttara)
                   {
@@ -1512,14 +1731,15 @@ void loop()
                         int    Current_Balance_A = Available_Balance_A - 30;
                         String Message_S         = String(Current_Balance_A);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
-                        
-                        TTPAFC.publish(Message);
+
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
+                        TTPAFC.publish(Safety_Measurement);  
                       }
                       else{}
                   }                                        
@@ -1529,12 +1749,22 @@ void loop()
 
        if (content.substring(1) == User_B)
        {
+        String Balance_B = String(Available_Balance_B);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_B + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
         Serial.println("Passenger boarded at 'Mirpur-10' station");
         Serial.println("Passenger Name : B ");
-        Serial.println(Message_U + Bus);
-        String Balance_B = String(Available_Balance_B);
-        Serial.println(Message_A + Balance_B + BDT);
-        Serial.println();   
+        Serial.println(Message_K);
+        Serial.println(Message_L);
+        Serial.println();
+
+        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+        TTPAFC.publish("Passenger Name : B ");
+        TTPAFC.publish(Message_K);
+        TTPAFC.publish(Message_L);    
     
                  if (content.substring(1) == Uttara)
                   {
@@ -1548,12 +1778,13 @@ void loop()
                         int    Current_Balance_B = Available_Balance_B - 30;
                         String Message_S         = String(Current_Balance_B);  
                         String Message           = Message_C + Message_S + BDT;
+                        const char* Message1 = Message.c_str();
                     
-                        Serial.println(Message);
+                        Serial.println(Message1);
                         Serial.println(Message_F);
                         Serial.println(Safety_Measurement);
 
-                        TTPAFC.publish(Message);
+                        TTPAFC.publish(Message1);
                         TTPAFC.publish(Message_F);
                         TTPAFC.publish(Safety_Measurement); 
                       }
@@ -1566,15 +1797,20 @@ void loop()
       if (content.substring(1) == User_C)
       {
         String Balance_C = String(Available_Balance_C);
-        Serial.println(Message_U + Bus);
+        String Message_X = Message_U + Bus;
+        String Message_Z = Message_A + Balance_C + BDT;
+        const char* Message_K = Message_X.c_str();
+        const char* Message_L = Message_Z.c_str();
+        
+        Serial.println(Message_K);
         Serial.println("User Name : C ");
-        Serial.println(Message_A + Balance_C + BDT); 
+        Serial.println(Message_L); 
         Serial.println(Message_T);
-        Serial.println(Message_P);
+        Serial.println(Message_Y);
 
-        TTPAFC.publish(Message_U + Bus);
+        TTPAFC.publish(Message_K);
         TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_A + Balance_C + BDT);
+        TTPAFC.publish(Message_L);
         TTPAFC.publish(Message_T);
         TTPAFC.publish(Message_Y);   
       }
