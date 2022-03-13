@@ -1,5 +1,4 @@
 
-
 #include <ETH.h>
 #include <WiFi.h>
 #include <WiFiAP.h>
@@ -49,6 +48,9 @@ String Agargaon      = "30 2S 20 2S";
 String Shahbag       = "40 2S 30 2S";
 String Motijheel     = "50 2S 40 2S";
 
+unsigned long lastConnectionTime = 10 * 12000;
+const unsigned long postInterval = 10 * 12000;
+
 int Available_Balance_A = random(100,250);
 int Available_Balance_B = random(175,415);
 int Available_Balance_C = random(0,8);
@@ -69,7 +71,7 @@ MFRC522 mfrc522(ssPIN, rstPIN);
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                   
 #define AIO_USERNAME   "_Maverick_"
-#define AIO_KEY        "aio_xmvu79ZHm4zVbpwbPuqCBrKOaHZr"
+#define AIO_KEY        "aio_jGNU96vkM6mWWbfodohxZ459iR88"
 
   
 // BLUETOOTH CLIENT
@@ -78,12 +80,16 @@ MFRC522 mfrc522(ssPIN, rstPIN);
 #error Bluetooth is not enabled! Please run
 `make menuconfig` to and enable it
 #endif
+
 BluetoothSerial SerialBT;
+
+int bluedata;
 
 // WIFI CLIENT
 
 #define WLAN_SSID       "TP-LINK_D8B6"
 #define WLAN_PASS       "farhan2758"
+
 WiFiClient client;
 
 // MQTT CLIENT
@@ -91,9 +97,10 @@ WiFiClient client;
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
 Adafruit_MQTT_Publish TTPAFC = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME"/feeds/TTPAFC"); 
 
-AsyncWebServer server(80);
 void MQTT_connect();
-int bluedata;
+
+AsyncWebServer server(80);
+TaskHandle_t Loop0;
 
 
 /****************************************************************************************************************************************************************************************************************************************************************************/
@@ -103,7 +110,7 @@ int bluedata;
 void setup() 
 {
   Serial.begin(115200);
-
+  delay(500);
   // Connection to WiFi access point. 
   {
   Serial.println();Serial.println();
@@ -144,76 +151,106 @@ void setup()
   SPI.begin();
   mfrc522.PCD_Init();
   
-  Serial.println(Message_G);
-  Serial.println(Message_B);
-  
-  TTPAFC.publish(Message_G);
-  TTPAFC.publish(Message_B);
+  // Creating LOOP function.
+  {
+    xTaskCreatePinnedToCore(
+                      Loop0code,
+                      "Loop 0",
+                      10000,
+                      NULL,
+                      1,
+                      &Loop0,
+                      0);                
+  } 
 }
 
 
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
+/****************************************************************************************************************************************************************************************************************************************************************************/
 
+void Loop0code( void * pvParameters ) {
+  for(;;){
+          {
+           MQTT_connect();
+
+//          {            
+//            unsigned long currentTime = millis();
+//            if (millis() - lastConnectionTime > postInterval) 
+//            {
+//              lastConnectionTime = millis();
+//              Serial.println(Message_G);
+//              Serial.println(Message_B);
+//  
+//              TTPAFC.publish(Message_G);
+//              TTPAFC.publish(Message_B);
+//            }
+//          }
+
+           while(SerialBT.available())
+           {
+            bluedata = SerialBT.parseInt();
+            Serial.println();
+            delay(20);
+            if (bluedata == 1) {
+              Serial.println("Passenger boarded at 'Shahbag' station.");
+              Serial.println("Passenger Name : A ");              
+              Serial.println(Message_F);
+              Serial.println(Safety_Measurement);
+        
+              TTPAFC.publish("Passenger boarded at 'Shahbag' station.");
+              TTPAFC.publish("Passenger Name : A ");
+              TTPAFC.publish(Message_F);
+              TTPAFC.publish(Safety_Measurement);   
+              }
+            else if (bluedata == 2) {
+              Serial.println("Passenger boarded at 'Mirpur-10' station.");
+              Serial.println("Passenger Name : B ");              
+              Serial.println(Message_F);
+              Serial.println(Safety_Measurement);
+        
+              TTPAFC.publish("Passenger boarded at 'Mirpur-10' station.");
+              TTPAFC.publish("Passenger Name : B "); 
+              TTPAFC.publish(Message_F);
+              TTPAFC.publish(Safety_Measurement);      
+              }
+            else if (bluedata == 3) {
+              Serial.println("Passenger boarded at 'Uttara' station.");
+              Serial.println("Passenger Name : A ");              
+              Serial.println(Message_F);
+              Serial.println(Safety_Measurement);
+        
+              TTPAFC.publish("Passenger boarded at 'Uttara' station.");
+              TTPAFC.publish("Passenger Name : A "); 
+              TTPAFC.publish(Message_F);
+              TTPAFC.publish(Safety_Measurement);          
+              }
+            else if (bluedata == 4) {
+              Serial.println("Passenger boarded at 'Cantonment' station.");
+              Serial.println("Passenger Name : B ");              
+              Serial.println(Message_F);
+              Serial.println(Safety_Measurement);
+        
+              TTPAFC.publish("Passenger boarded at 'Cantonment' station.");
+              TTPAFC.publish("Passenger Name : B ");
+              TTPAFC.publish(Message_F);
+              TTPAFC.publish(Safety_Measurement);        
+              }
+            else if (bluedata == 5) {
+              Serial.println(Message_I);
+              TTPAFC.publish(Message_I);                    
+              }
+           }
+          }                  
+         }
+}
+
+/****************************************************************************************************************************************************************************************************************************************************************************/
+/****************************************************************************************************************************************************************************************************************************************************************************/
+/****************************************************************************************************************************************************************************************************************************************************************************/
 
 void loop() 
-{
-
-      while(SerialBT.available())
-    {
-      bluedata = SerialBT.parseInt();
-      Serial.println();
-      delay(20);
-      if (bluedata == 1) {
-        Serial.println("Passenger boarded at 'Shahbag' station.");
-        Serial.println("Passenger Name : A ");              
-        Serial.println(Message_F);
-        Serial.println(Safety_Measurement);
-        
-        TTPAFC.publish("Passenger boarded at 'Shahbag' station.");
-        TTPAFC.publish("Passenger Name : A ");
-        TTPAFC.publish(Message_F);
-        TTPAFC.publish(Safety_Measurement);   
-        }
-      else if (bluedata == 2) {
-        Serial.println("Passenger boarded at 'Mirpur-10' station.");
-        Serial.println("Passenger Name : B ");              
-        Serial.println(Message_F);
-        Serial.println(Safety_Measurement);
-        
-        TTPAFC.publish("Passenger boarded at 'Mirpur-10' station.");
-        TTPAFC.publish("Passenger Name : B "); 
-        TTPAFC.publish(Message_F);
-        TTPAFC.publish(Safety_Measurement);      
-        }
-      else if (bluedata == 3) {
-        Serial.println("Passenger boarded at 'Uttara' station.");
-        Serial.println("Passenger Name : A ");              
-        Serial.println(Message_F);
-        Serial.println(Safety_Measurement);
-        
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : A "); 
-        TTPAFC.publish(Message_F);
-        TTPAFC.publish(Safety_Measurement);          
-        }
-      else if (bluedata == 4) {
-        Serial.println("Passenger boarded at 'Cantonment' station.");
-        Serial.println("Passenger Name : B ");              
-        Serial.println(Message_F);
-        Serial.println(Safety_Measurement);
-        
-        TTPAFC.publish("Passenger boarded at 'Cantonment' station.");
-        TTPAFC.publish("Passenger Name : B ");
-        TTPAFC.publish(Message_F);
-        TTPAFC.publish(Safety_Measurement);        
-        }
-       else if (bluedata == 5) {
-        Serial.println(Message_I);
-        TTPAFC.publish(Message_I);                    
-        }
-    }
-    
+{                         
   if ( ! mfrc522.PICC_IsNewCardPresent()) 
   {
     return;
@@ -233,8 +270,7 @@ void loop()
      content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
      content.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
-  
-  
+    
   Serial.println();
   content.toUpperCase();
 
@@ -1845,4 +1881,4 @@ void MQTT_connect()
     }
    }
    Serial.println("MQTT Connected!\n");
-  }   
+  }      
