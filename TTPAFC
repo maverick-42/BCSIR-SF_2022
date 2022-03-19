@@ -1,6 +1,7 @@
 
 #include <ETH.h>
 #include <WiFi.h>
+#include <EEPROM.h>
 #include <WiFiAP.h>
 #include <WiFiSTA.h>
 #include <WiFiUdp.h>
@@ -22,64 +23,86 @@
 #include <ESPAsyncWebServer.h>
 #include <Adafruit_MQTT_Client.h> 
 
-
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
 
+String User_A = "F2DE1333";
+String User_B = "E7728A7B";
 
-String User_A = "F2 DE 13 33";
-String User_B = "01 0S 01 0S";
-String User_C = "E7 72 8A 7B";
+byte readCard[4];
+String tagID = "";
 
-#define BDT                 " BDT."
-#define Message_I           "QR code invalid."
+#define EEPROM_SIZE          12
 #define Message_G           "Welcome to Bangladesh Road Transportation AFC System."
 #define Message_B           "Please place your user card in front of the scanner..."
-#define Message_U           "User card tapped at bus : "
+#define Message_I           "QR code invalid."
 #define Message_A           "Available balance : "
 #define Message_C           "Your current balance : "
-#define Message_Y           "Please recharge your card!"
-#define Message_T           "You do not have the required amount to travel with us."
-#define Message_F           "Thank you for choosing us!"
-#define Safety_Measurement  "Stay Safe.Stay Healthy." 
-
-int trigPIN = 17;  
-int echoPIN = 21;
-UltraSonicDistanceSensor ultrasonicSensor(trigPIN,echoPIN);
-
-int buttonONE    = 12;
-int buttonTWO    = 14;
-int buttonTHREE  = 25;
-int buttonFOUR   = 26;
-int buttonFIVE   = 27;
-
-//String Uttara        = "10 1S 00 1S";
-//String Mirpur_10     = "20 2S 10 2S";
-//String Agargaon      = "30 2S 20 2S";
-//String Shahbag       = "40 2S 30 2S";
-//String Motijheel     = "50 2S 40 2S";
-
-int Available_Balance_A = random(100,250);
-int Available_Balance_B = random(175,415);
-int Available_Balance_C = random(0,8);
-
-int Bus = random(1,10);
+#define Message_R           "Please recharge your card!"
+#define Message_T           "Insufficient fund."
+#define Message_S           "Account balance recharge successful!"
+#define BDT                 " BDT."
 
 int rstPIN = 22;
 int ssPIN  =  5;
 MFRC522 mfrc522(ssPIN, rstPIN);
 
+int trigPIN = 17;  
+int echoPIN = 21;
+UltraSonicDistanceSensor ultrasonicSensor(trigPIN,echoPIN);
+
+
+int route1  = 15;
+int route2  = 20;
+int route3  = 30;
+int route4  = 35;
+int route5  =  5;
+int route6  = 15;
+int route7  = 20;
+int route8  = 15;
+int route9  = 10;
+int route10 = 15;
+int route11 =  5;
+int route12 = 20;
+int route13 =  5;
+int route14 = 10;
+int route15 = 15;
+int route16 = 30;
+int route17 =  5;
+int route18 = 15;
+int route19 = 20;
+int route20 = 35;
+
+int route1_ticket  = 30;
+int route2_ticket  = 40; 
+int route3_ticket  = 60; 
+int route4_ticket  = 70; 
+int route5_ticket  = 10; 
+int route6_ticket  = 30;
+int route7_ticket  = 40;
+int route8_ticket  = 25;
+int route9_ticket  = 20;
+int route10_ticket = 30;
+int route11_ticket = 10;
+int route12_ticket = 40;
+int route13_ticket = 10;
+int route14_ticket = 20;
+int route15_ticket = 30;
+int route16_ticket = 60;
+int route17_ticket = 10;
+int route18_ticket = 25;
+int route19_ticket = 40;
+int route20_ticket = 70;
 
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
-
 
 //Adafruit.io Setup
 
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                   
 #define AIO_USERNAME   "_Maverick_"
-#define AIO_KEY        "aio_vgPA75ETnUvJ46XpG5KIoa7TAWGu"
+#define AIO_KEY        "aio_lCfY25t7WnsYiGXNdHPNFGEGlDJj"
 
   
 // BLUETOOTH CLIENT
@@ -110,21 +133,20 @@ void MQTT_connect();
 AsyncWebServer server(80);
 TaskHandle_t Loop0;
 
-
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
-
 
 void setup() 
 {
   Serial.begin(115200);
   delay(500);
+
   // Connection to WiFi access point. 
   {
   Serial.println();Serial.println();
   Serial.print("Connecting to ");
   Serial.println(WLAN_SSID);
- 
+  
   WiFi.mode(WIFI_STA);
   WiFi.begin(WLAN_SSID, WLAN_PASS);
   while (WiFi.status() != WL_CONNECTED) 
@@ -155,26 +177,25 @@ void setup()
   Serial.println("ASYNC server started!");
   Serial.println();
   }
-
-  pinMode(buttonONE,   INPUT_PULLUP);
-  pinMode(buttonTWO,   INPUT_PULLUP);
-  pinMode(buttonTHREE, INPUT_PULLUP);
-  pinMode(buttonFOUR,  INPUT_PULLUP);
-  pinMode(buttonFIVE,  INPUT_PULLUP);
   
   SPI.begin();
   mfrc522.PCD_Init();
-  
-  {
-    xTaskCreatePinnedToCore(
-                      Loop0code,
-                      "Loop 0",
-                      10000,
-                      NULL,
-                      1,
-                      &Loop0,
-                      0);                
-  }   
+
+  EEPROM.begin(EEPROM_SIZE);
+  EEPROM.put(0, 125);
+  EEPROM.put(1, 0);
+  EEPROM.put(2, 85);
+    
+ {
+   xTaskCreatePinnedToCore(
+                     Loop0code,
+                     "Loop 0",
+                     10000,
+                     NULL,
+                     1,
+                     &Loop0,
+                     0);                
+ } 
 }
 
 
@@ -182,12 +203,13 @@ void setup()
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
 
+
 void Loop0code( void * pvParameters ) {
   for(;;){         
           int distanceCm = ultrasonicSensor.measureDistanceCm(); 
           if (distanceCm <= 10)
            {
-            SerialBT.println("Scan");            
+            SerialBT.println(50);            
         
             Serial.println(Message_G);
             Serial.println(Message_B);
@@ -195,1694 +217,1245 @@ void Loop0code( void * pvParameters ) {
             TTPAFC.publish(Message_G);
             TTPAFC.publish(Message_B);
             }
-         delay(7500);   
+         delay(5000);   
         }
 }
-        
+
+
+/****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
 
+
 void loop() 
 {
-//   MQTT_connect();
-   
+   MQTT_connect();
+
+   int Available_Balance_A = EEPROM.read(0);
+   int Available_Balance_X = EEPROM.read(2);
+  
    while(SerialBT.available())
    {
     bluedata = SerialBT.parseInt();
     Serial.println();
     delay(20);
-    if (bluedata == 1) {
+   
+    if (bluedata == 0) {      
+     Serial.println("Journey route not selected!");
+           
+     EEPROM.write(1, 0);
+     EEPROM.commit();
+      
+     TTPAFC.publish("Journey route not selected!");
+    }
+   
+   else if (bluedata == 1) {
+      Serial.println("Journey selected from 'Uttara' to 'Mirpur-10'.");
+      Serial.println("Ticket rate : 30 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");
+      
+      EEPROM.write(1, 1);
+      EEPROM.commit();              
+
+      TTPAFC.publish("Journey selected from 'Uttara' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. ");
+   }
+  
+   else if (bluedata == 2) {
+      Serial.println("Journey selected from 'Uttara' to 'Agargaon'.");
+      Serial.println("Ticket rate : 40 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 2);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Uttara' to 'Agargaon'.");  
+      TTPAFC.publish("Ticket rate : 40 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+   else if (bluedata == 3) {
+      Serial.println("Journey selected from 'Uttara' to 'Shahbag'.");
+      Serial.println("Ticket rate : 60 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 3);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Uttara' to 'Shahbag'.");  
+      TTPAFC.publish("Ticket rate : 60 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }            
+
+   else if (bluedata == 4) {
+      Serial.println("Journey selected from 'Uttara' to 'Motijheel'.");
+      Serial.println("Ticket rate : 70 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 4);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Uttara' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 70 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+   else if (bluedata == 5) {
+      Serial.println("Journey selected from 'Mirpur-10' to 'Agargaon'.");
+      Serial.println("Ticket rate : 10 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 5);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Agargaon'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+   else if (bluedata == 6) {
+      Serial.println("Journey selected from 'Mirpur-10' to 'Shahbag'.");
+      Serial.println("Ticket rate : 30 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 6);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Shahbag'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+    else if (bluedata == 7) {
+      Serial.println("Journey selected from 'Mirpur-10' to 'Motijheel'.");
+      Serial.println("Ticket rate : 40 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 7);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 40 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+    else if (bluedata == 8) {
+      Serial.println("Journey selected from 'Mirpur-10' to 'Uttara'.");
+      Serial.println("Ticket rate : 25 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 8);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 25 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+    else if (bluedata == 9) {
+      Serial.println("Journey selected from 'Agargaon' to 'Shahbag'.");
+      Serial.println("Ticket rate : 20 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 9);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Agargaon' to 'Shahbag'.");  
+      TTPAFC.publish("Ticket rate : 20 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+    else if (bluedata == 10) {
+      Serial.println("Journey selected from 'Agargaon' to 'Motijheel'.");
+      Serial.println("Ticket rate : 30 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 10);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Agargaon' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+    else if (bluedata == 11) {
+      Serial.println("Journey selected from 'Agargaon' to 'Mirpur-10'.");
+      Serial.println("Ticket rate : 10 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 11);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Agargaon' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+    else if (bluedata == 12) {
+      Serial.println("Journey selected from 'Agargaon' to 'Uttara'.");
+      Serial.println("Ticket rate : 40 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 12);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Agargaon' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 40 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+     else if (bluedata == 13) {
+      Serial.println("Journey selected from 'Shahbag' to 'Motijheel'.");
+      Serial.println("Ticket rate : 10 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 13);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Shahbag' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }                                  
+
+     else if (bluedata == 14) {
+      Serial.println("Journey selected from 'Shahbag' to 'Agargaon'.");
+      Serial.println("Ticket rate : 20 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 14);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Shahbag' to 'Agargaon'.");  
+      TTPAFC.publish("Ticket rate : 20 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+     else if (bluedata == 15) {
+      Serial.println("Journey selected from 'Shahbag' to 'Mirpur-10'.");
+      Serial.println("Ticket rate : 30 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 15);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Shahbag' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+     else if (bluedata == 16) {
+      Serial.println("Journey selected from 'Shahbag' to 'Uttara'.");
+      Serial.println("Ticket rate : 60 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 16);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Shahbag' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 60 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+     else if (bluedata == 17) {
+      Serial.println("Journey selected from 'Motijheel' to 'Shahbag'.");
+      Serial.println("Ticket rate : 10 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 17);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Motijheel' to 'Shahbag'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+      else if (bluedata == 18) {
+      Serial.println("Journey selected from 'Motijheel' to 'Agargaon'.");
+      Serial.println("Ticket rate : 25 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 18);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Motijheel' to 'Agargaon'.");  
+      TTPAFC.publish("Ticket rate : 25 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+      else if (bluedata == 19) {
+      Serial.println("Journey selected from 'Motijheel' to 'Mirpur-10'.");
+      Serial.println("Ticket rate : 40 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 19);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Motijheel' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 40 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }
+
+      else if (bluedata == 20) {
+      Serial.println("Journey selected from 'Motijheel' to 'Uttara'.");
+      Serial.println("Ticket rate : 70 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 20);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Journey selected from 'Motijheel' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 70 BDT."); 
+      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+     }                         
+                            
+   else if (bluedata == 21) {
       Serial.println("Passenger boarded at 'Shahbag' station.");
       Serial.println("Passenger Name : A ");              
-      Serial.println(Message_F);
-      Serial.println(Safety_Measurement);
         
       TTPAFC.publish("Passenger boarded at 'Shahbag' station.");
-      TTPAFC.publish("Passenger Name : A ");
-      TTPAFC.publish(Message_F);
-      TTPAFC.publish(Safety_Measurement);   
+      TTPAFC.publish("Passenger Name : A "); 
       }
-    else if (bluedata == 2) {
+    else if (bluedata == 22) {
       Serial.println("Passenger boarded at 'Mirpur-10' station.");
       Serial.println("Passenger Name : B ");              
-      Serial.println(Message_F);
-      Serial.println(Safety_Measurement);
         
       TTPAFC.publish("Passenger boarded at 'Mirpur-10' station.");
-      TTPAFC.publish("Passenger Name : B "); 
-      TTPAFC.publish(Message_F);
-      TTPAFC.publish(Safety_Measurement);      
+      TTPAFC.publish("Passenger Name : B ");      
       }
-    else if (bluedata == 3) {
+    else if (bluedata == 23) {
       Serial.println("Passenger boarded at 'Uttara' station.");
       Serial.println("Passenger Name : A ");              
-      Serial.println(Message_F);
-      Serial.println(Safety_Measurement);
         
       TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-      TTPAFC.publish("Passenger Name : A "); 
-      TTPAFC.publish(Message_F);
-      TTPAFC.publish(Safety_Measurement);          
+      TTPAFC.publish("Passenger Name : A ");           
       }
-    else if (bluedata == 4) {
+    else if (bluedata == 24) {
       Serial.println("Passenger boarded at 'Cantonment' station.");
       Serial.println("Passenger Name : B ");              
-      Serial.println(Message_F);
-      Serial.println(Safety_Measurement);
         
       TTPAFC.publish("Passenger boarded at 'Cantonment' station.");
-      TTPAFC.publish("Passenger Name : B ");
-      TTPAFC.publish(Message_F);
-      TTPAFC.publish(Safety_Measurement);        
+      TTPAFC.publish("Passenger Name : B ");        
       }
-    else if (bluedata == 5) {
+    else if (bluedata == 25) {
       Serial.println(Message_I);
       TTPAFC.publish(Message_I);                    
-      }
-   }
+      }   
    
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
-                                                     
-  
-  String content= "";
-  byte letter;
-  
-  for (byte i = 0; i < mfrc522.uid.size; i++) 
-  {
-     Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-     Serial.print(mfrc522.uid.uidByte[i], HEX);
-     content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-     content.concat(String(mfrc522.uid.uidByte[i], HEX));
-  }
+    else if (bluedata == 50) {
+      Serial.println("Student Pass.");
+      Serial.println("Passenger Name : X ");              
 
-  bool Uttara    = digitalRead(buttonONE);
-  bool Mirpur_10 = digitalRead(buttonTWO);
-  bool Agargaon  = digitalRead(buttonTHREE);
-  bool Shahbag   = digitalRead(buttonFOUR);
-  bool Motijheel = digitalRead(buttonFIVE);
-    
-  Serial.println();
-  content.toUpperCase();
-  Serial.println(Bus);
+      int route_x = EEPROM.read(1); 
+        
+      TTPAFC.publish("Student Pass.");
+      TTPAFC.publish("Passenger Name : X "); 
 
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
- if (Bus == 1 || Bus == 3 || Bus == 5 || Bus == 7 || Bus == 9)
- { 
-  if (Uttara == true)
-  {
-    Serial.println("Bus currently at 'Uttara' station.");
-    TTPAFC.publish("Bus currently at 'Uttara' station.");
-   
-  if ( ! mfrc522.PICC_IsNewCardPresent()) 
-  {
-    return;
-  }
-  if ( ! mfrc522.PICC_ReadCardSerial()) 
-  {
-    return;
-  }
-        if (content.substring(1) == User_A)
-          {
-            String Balance_A = String(Available_Balance_A);
-            String Message_X = Message_U + Bus;
-            String Message_Z = Message_A + Balance_A + BDT;
-            const char* Message_K = Message_X.c_str();
-            const char* Message_L = Message_Z.c_str();                        
-            
-            Serial.println("Passenger boarded at 'Uttara' station.");
-            Serial.println("Passenger Name : A ");
-            Serial.println(Message_K);
-            Serial.println(Message_L);
-            Serial.println();
-            
-            TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-            TTPAFC.publish("Passenger Name : A ");
-            TTPAFC.publish(Message_K);
-            TTPAFC.publish(Message_L);            
-            Serial.println();
-                
-                if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");   
-                      
-                      if (content.substring(1) == User_A)
-                      {
-                        Serial.println("Deducted BDT 30 from your account.");
-                    
-                        int    Current_Balance_A = Available_Balance_A - 30;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);                        
-                      }
-  if ( ! mfrc522.PICC_IsNewCardPresent()) 
-  {
-    return;
-  }
-  if ( ! mfrc522.PICC_ReadCardSerial()) 
-  {
-    return;
-  }                                            
-                      else{}        
-                  }
-                 if (Agargaon == true)
-                  {
-                    Serial.println("Bus reached 'Agargaon' station.");
-                    TTPAFC.publish("Bus reached 'Agargaon' station."); 
-                      
-                      if (content.substring(1) == User_A)
-                      {
-                        Serial.println("Deducted BDT 40 from your account.");
-                    
-                        int    Current_Balance_A = Available_Balance_A - 40;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }                      
-                      else{}  
-                  }
-                 if (Shahbag == true)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      {
-                        Serial.println("Deducted BDT 60 from your account.");
-                    
-                        int    Current_Balance_A = Available_Balance_A - 60;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }                      
-                      else{} 
-                  }
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      {
-                        Serial.println("Deducted BDT 70 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 70;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }                      
-                      else{}  
-                  }                                        
-            }
-
- /****************************************************************************************************************************************************************************************************************************************************************************/
-
-        if (content.substring(1) == User_B)
-          {
-            String Balance_B = String(Available_Balance_B);
-            String Message_X = Message_U + Bus;
-            String Message_Z = Message_A + Balance_B + BDT;
-            const char* Message_K = Message_X.c_str();
-            const char* Message_L = Message_Z.c_str();  
-            
-            Serial.println("Passenger boarded at 'Uttara' station.");
-            Serial.println("Passenger Name : B ");
-            Serial.println(Message_K);
-            Serial.println(Message_L);
-            Serial.println();
-                        
-            TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-            TTPAFC.publish("Passenger Name : B ");
-            TTPAFC.publish(Message_K);
-            TTPAFC.publish(Message_L);  
-                
-                if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");  
-                      
-                      if (content.substring(1) == User_B)
-                      {
-                        Serial.println("Deducted BDT 30 from your account.");
-                    
-                        int    Current_Balance_B = Available_Balance_B - 30;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }                      
-                      else{}        
-                  }
-                 if (Agargaon == true)
-                  {
-                    Serial.println("Bus reached 'Agargaon' station.");
-                    TTPAFC.publish("Bus reached 'Agargaon' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      {
-                        Serial.println("Deducted BDT 40 from your account.");
-                    
-                        int    Current_Balance_B = Available_Balance_B - 40;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }                      
-                      else{}  
-                  }
-                 if (Shahbag == true)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      {
-                        Serial.println("Deducted BDT 60 from your account.");
-                    
-                        int    Current_Balance_B = Available_Balance_B - 60;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }                      
-                      else{} 
-                  }
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      {
-                        Serial.println("Deducted BDT 70 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 70;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }                      
-                      else{}  
-                  }                                        
-            }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/    
-           
-            if (content.substring(1) == User_C)
-            {
-              String Balance_C = String(Available_Balance_C);
-              String Message_X = Message_U + Bus;
-              String Message_Z = Message_A + Balance_C + BDT;
-              const char* Message_K = Message_X.c_str();
-              const char* Message_L = Message_Z.c_str(); 
-                           
-              Serial.println(Message_K);
-              Serial.println("User Name : C ");
-              Serial.println(Message_L); 
-              Serial.println(Message_T);
-              Serial.println(Message_Y);
-
-              TTPAFC.publish(Message_K);
-              TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_L);
-              TTPAFC.publish(Message_T);
-              TTPAFC.publish(Message_Y);    
-            }
-          }   
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/                              
-    
-     else if (Mirpur_10 == true)
-     {
-       Serial.println("Bus currently at 'Mirpur-10' station.");
-       TTPAFC.publish("Bus currently at 'Mirpur-10' station.");
-     
-                if (content.substring(1) == User_A)
-                 {
-                   String Balance_A = String(Available_Balance_A);
-                   String Message_X = Message_U + Bus;
-                   String Message_Z = Message_A + Balance_A + BDT;
-                   const char* Message_K = Message_X.c_str();
-                   const char* Message_L = Message_Z.c_str(); 
-                   
-                   Serial.println("Passenger boarded at 'Mirpur-10' station.");
-                   Serial.println("Passenger Name : A ");
-                   Serial.println(Message_K);
-                   Serial.println(Message_L);
-                   Serial.println();
-                               
-                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-                   TTPAFC.publish("Passenger Name : A ");
-                   TTPAFC.publish(Message_K);
-                   TTPAFC.publish(Message_L);  
-                   
-                  
-                    if (Agargaon == true)
-                     { 
-                      Serial.println("Bus reached 'Agargaon' station.");
-                      TTPAFC.publish("Bus reached 'Agargaon' station.");
-                     
-                        if (content.substring(1) == User_A)
-                        {
-                          Serial.println("Deducted BDT 10 from your account.");
-                          
-                          int    Current_Balance_A = Available_Balance_A - 10;
-                          String Message_S         = String(Current_Balance_A);  
-                          String Message           = Message_C + Message_S + BDT;
-                          const char* Message1 = Message.c_str();
-                    
-                          Serial.println(Message1);
-                          Serial.println(Message_F);
-                          Serial.println(Safety_Measurement);
-
-                          TTPAFC.publish(Message1);
-                          TTPAFC.publish(Message_F);
-                          TTPAFC.publish(Safety_Measurement); 
-                        }
-                        else{} 
-                     }
-                 if (Shahbag == true)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 30;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-                    
-                      if (content.substring(1) == User_A)
-                      {
-                        Serial.println("Deducted BDT 40 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 40;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }
-                }
-                  
-/****************************************************************************************************************************************************************************************************************************************************************************/          
-
-     
-                if (content.substring(1) == User_B)
-                 {
-                   String Balance_B = String(Available_Balance_B);
-                   String Message_X = Message_U + Bus;
-                   String Message_Z = Message_A + Balance_B + BDT;
-                   const char* Message_K = Message_X.c_str();
-                   const char* Message_L = Message_Z.c_str();
-                   
-                   Serial.println("Passenger boarded at 'Mirpur-10' station.");
-                   Serial.println("Passenger Name : B ");
-                   Serial.println(Message_K);
-                   Serial.println(Message_L);
-                   Serial.println();
-                   
-                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-                   TTPAFC.publish("Passenger Name : B ");
-                   TTPAFC.publish(Message_K);
-                   TTPAFC.publish(Message_L);
-                  
-                    if (Agargaon == true)
-                     { 
-                        Serial.println("Bus reached 'Agargaon' station.");
-                        TTPAFC.publish("Bus reached 'Agargaon' station.");
-                     
-                        if (content.substring(1) == User_B)
-                        {
-                          Serial.println("Deducted BDT 10 from your account.");
-                          
-                          int    Current_Balance_B = Available_Balance_B - 10;
-                          String Message_S         = String(Current_Balance_B);  
-                          String Message           = Message_C + Message_S + BDT;
-                          const char* Message1 = Message.c_str();
-                    
-                          Serial.println(Message1);
-                          Serial.println(Message_F);
-                          Serial.println(Safety_Measurement);
-
-                          TTPAFC.publish(Message1);
-                          TTPAFC.publish(Message_F);
-                          TTPAFC.publish(Safety_Measurement);   
-                        }
-                        else{} 
-                     }
-                 if (Shahbag == true)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 30;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-                    
-                      if (content.substring(1) == User_B)
-                      {
-                        Serial.println("Deducted BDT 40 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 40;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }
-                 }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/    
-           
-            if (content.substring(1) == User_C)
-            {
-              String Balance_C = String(Available_Balance_C);
-              String Message_X = Message_U + Bus;
-              String Message_Z = Message_A + Balance_C + BDT;
-              const char* Message_K = Message_X.c_str();
-              const char* Message_L = Message_Z.c_str();
-              
-              Serial.println(Message_K);
-              Serial.println("User Name : C ");
-              Serial.println(Message_L); 
-              Serial.println(Message_T);
-              Serial.println(Message_Y);
-
-              TTPAFC.publish(Message_K);
-              TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_L);
-              TTPAFC.publish(Message_T);
-              TTPAFC.publish(Message_Y);    
-            }
-          }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
-                  
-    
-    else if (Agargaon == true)
-          {
-            Serial.println("Bus currently at 'Agargaon' station.");
-            TTPAFC.publish("Bus currently at 'Agargaon' station.");
-
-              if (content.substring(1) == User_A)
-              {
-                   String Balance_A = String(Available_Balance_A);
-                   String Message_X = Message_U + Bus;
-                   String Message_Z = Message_A + Balance_A + BDT;
-                   const char* Message_K = Message_X.c_str();
-                   const char* Message_L = Message_Z.c_str();
-                   
-                   Serial.println("Passenger boarded at 'Agargaon' station.");
-                   Serial.println("Passenger Name : A ");
-                   Serial.println(Message_K);
-                   Serial.println(Message_L);
-                   Serial.println();
-                   
-                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-                   TTPAFC.publish("Passenger Name : A ");
-                   TTPAFC.publish(Message_K);
-                   TTPAFC.publish(Message_L);
-
-                 if (Shahbag == true)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      {
-                        Serial.println("Deducted BDT 20 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 20;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  } 
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-
-                      if (content.substring(1) == User_A)
-                      {                    
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 30;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }               
-          }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
-              if (content.substring(1) == User_B)
-              {
-                   String Balance_B = String(Available_Balance_B);
-                   String Message_X = Message_U + Bus;
-                   String Message_Z = Message_A + Balance_B + BDT;
-                   const char* Message_K = Message_X.c_str();
-                   const char* Message_L = Message_Z.c_str();
-                   
-                   Serial.println("Passenger boarded at 'Agargaon' station.");
-                   Serial.println("Passenger Name : B ");
-                   Serial.println(Message_K);
-                   Serial.println(Message_L);
-                   Serial.println();
-                   
-                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-                   TTPAFC.publish("Passenger Name : B ");
-                   TTPAFC.publish(Message_K);
-                   TTPAFC.publish(Message_L);
-
-                 if (Shahbag == false)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      {
-                        Serial.println("Deducted BDT 20 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 20;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);     
-                      }
-                      else{}
-                  } 
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-
-                      if (content.substring(1) == User_B)
-                      {                    
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 30;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }               
-           }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/    
-           
-            if (content.substring(1) == User_C)
-            {
-              String Balance_C = String(Available_Balance_C);
-              String Message_X = Message_U + Bus;
-              String Message_Z = Message_A + Balance_C + BDT;
-              const char* Message_K = Message_X.c_str();
-              const char* Message_L = Message_Z.c_str();
-                   
-              Serial.println(Message_K);
-              Serial.println("User Name : C ");
-              Serial.println(Message_L); 
-              Serial.println(Message_T);
-              Serial.println(Message_Y);
-
-              TTPAFC.publish(Message_K);
-              TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_L);
-              TTPAFC.publish(Message_T);
-              TTPAFC.publish(Message_Y);   
-            }
-          }
-
- /****************************************************************************************************************************************************************************************************************************************************************************/
- /****************************************************************************************************************************************************************************************************************************************************************************/                  
+        if(route_x == 0) {
+          Serial.println("Journey route not selected!");
+          TTPAFC.publish("Journey route not selected!");   
+        }
+        else if(route_x == 1) {
           
-    else if (Shahbag == true)
-          {
-            Serial.println("Bus currently at 'Shahbag' station.");
-            TTPAFC.publish("Bus currently at 'Shahbag' station.");
-
-              if (content.substring(1) == User_A)
-              {
-                   String Balance_A = String(Available_Balance_A);
-                   String Message_X = Message_U + Bus;
-                   String Message_Z = Message_A + Balance_A + BDT;
-                   const char* Message_K = Message_X.c_str();
-                   const char* Message_L = Message_Z.c_str();
-                   
-                   Serial.println("Passenger boarded at 'Shahbag' station.");
-                   Serial.println("Passenger Name : A ");
-                   Serial.println(Message_K);
-                   Serial.println(Message_L);
-                   Serial.println();
-                   
-                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-                   TTPAFC.publish("Passenger Name : A ");
-                   TTPAFC.publish(Message_K);
-                   TTPAFC.publish(Message_L);
-                   
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      {
-                        Serial.println("Deducted BDT 10 from your account.");
-
-                        int Current_Balance_A = Available_Balance_A - 10;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }
-                      else{}
-                  }                
-             }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-               
-               if (content.substring(1) == User_B)
-              {
-                   String Balance_B = String(Available_Balance_B);
-                   String Message_X = Message_U + Bus;
-                   String Message_Z = Message_A + Balance_B + BDT;
-                   const char* Message_K = Message_X.c_str();
-                   const char* Message_L = Message_Z.c_str();
-                   
-                   Serial.println("Passenger boarded at 'Shahbag' station.");
-                   Serial.println("Passenger Name : B ");
-                   Serial.println(Message_K);
-                   Serial.println(Message_L);
-                   Serial.println();
-                   
-                   TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-                   TTPAFC.publish("Passenger Name : B ");
-                   TTPAFC.publish(Message_K);
-                   TTPAFC.publish(Message_L);
-                   
-                 if (Motijheel == true)
-                  {
-                    Serial.println("Bus reached 'Motijheel' station.");
-                    TTPAFC.publish("Bus reached 'Motijheel' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      {
-                        Serial.println("Deducted BDT 10 from your account.");
-
-                        int Current_Balance_B = Available_Balance_B - 10;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }
-                      else{}
-                  }                
-             }                                   
-
-/****************************************************************************************************************************************************************************************************************************************************************************/    
-           
-            if (content.substring(1) == User_C)
-            {
-              String Balance_C = String(Available_Balance_C);
-              String Message_X = Message_U + Bus;
-              String Message_Z = Message_A + Balance_C + BDT;
-              const char* Message_K = Message_X.c_str();
-              const char* Message_L = Message_Z.c_str();
-              
-              Serial.println(Message_K);
-              Serial.println("User Name : C ");
-              Serial.println(Message_L); 
-              Serial.println(Message_T);
-              Serial.println(Message_Y);
-
-              TTPAFC.publish(Message_K);
-              TTPAFC.publish("User Name : C ");
-              TTPAFC.publish(Message_L);
-              TTPAFC.publish(Message_T);
-              TTPAFC.publish(Message_Y);    
-            }
-          }    
- } 
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
- 
- if (Bus == 2 || Bus == 4 || Bus == 6 || Bus == 8 || Bus == 10)
- {
-  if (Motijheel == true)
-  {
-    Serial.println("Bus currently at 'Motijheel' station.");
-    TTPAFC.publish("Bus currently at 'Motijheel' station.");
-
-       if (content.substring(1) == User_A)
-       {
-        String Balance_A = String(Available_Balance_A);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_A + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Motijheel' station.");
-        Serial.println("Passenger Name : A ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-        
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : A ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);
-    
-                if (Shahbag == true)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 10 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 10;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }
-                 if (Agargaon == true)
-                  {
-                    Serial.println("Bus reached 'Agargaon' station.");
-                    TTPAFC.publish("Bus reached 'Agargaon' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 30;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}   
-                  }
-                 if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 40 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 40;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);    
-                      }
-                      else{}
-                  }
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 70 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 70;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }                                        
-          }  
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
-       if (content.substring(1) == User_B)
-       {
-        String Balance_B = String(Available_Balance_B);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_B + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Motijheel' station.");
-        Serial.println("Passenger Name : B ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : B ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);
-    
-                if (Shahbag == true)
-                  {
-                    Serial.println("Bus reached 'Shahbag' station.");
-                    TTPAFC.publish("Bus reached 'Shahbag' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 10 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 10;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }
-                 if (Agargaon == true)
-                  {
-                    Serial.println("Bus reached 'Agargaon' station.");
-                    TTPAFC.publish("Bus reached 'Agargaon' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 30;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);    
-                      }
-                      else{}   
-                  }
-                 if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 40 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 40;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 70 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 70;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }
-                      else{}
-                  }                                        
-          }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-       
-      if (content.substring(1) == User_C)
-      {
-        String Balance_C = String(Available_Balance_C);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_C + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println(Message_K);
-        Serial.println("User Name : C ");
-        Serial.println(Message_L); 
-        Serial.println(Message_T);
-        Serial.println(Message_Y);
-
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_L);
-        TTPAFC.publish(Message_T);
-        TTPAFC.publish(Message_Y);    
+          int Balance_M = Available_Balance_X - route1 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }
       }
-    }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
-  if (Shahbag == false)
-  {
-    Serial.println("Bus currently at 'Shahbag' station.");
-    TTPAFC.publish("Bus currently at 'Shahbag' station.");
-
-       if (content.substring(1) == User_A)
-       {
-        String Balance_A = String(Available_Balance_A);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_A + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Shahbag' station.");
-        Serial.println("Passenger Name : A ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-        
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : A ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);   
-    
-                if (Agargaon == true)
-                  {
-                    Serial.println("Bus reached 'Agargaon' station.");
-                    TTPAFC.publish("Bus reached 'Agargaon' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 20 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 20;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }
-                 if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 30;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}   
-                  }
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 60 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 60;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }                                        
-          }  
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
-       if (content.substring(1) == User_B)
-       {
-        String Balance_B = String(Available_Balance_B);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_B + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Shahbag' station.");
-        Serial.println("Passenger Name : B ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-        
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : B ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);    
-    
-                 if (Agargaon == true)
-                  {
-                    Serial.println("Bus reached 'Agargaon' station.");
-                    TTPAFC.publish("Bus reached 'Agargaon' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 20 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 20;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }
-                      else{}   
-                  }
-                 if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 30;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 60 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 60;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }                                        
-          }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-       
-      if (content.substring(1) == User_C)
-      {
-        String Balance_C = String(Available_Balance_C);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_C + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println(Message_K);
-        Serial.println("User Name : C ");
-        Serial.println(Message_L); 
-        Serial.println(Message_T);
-        Serial.println(Message_Y);
-
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_L);
-        TTPAFC.publish(Message_T);
-        TTPAFC.publish(Message_Y);    
+      else if(route_x == 2) {
+          
+          int Balance_M = Available_Balance_X - route2 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
       }
-    }    
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
- 
-  if (Agargaon == true)
-  {
-    Serial.println("Bus currently at 'Agargaon' station.");
-    TTPAFC.publish("Bus currently at 'Agargaon' station.");
-
-       if (content.substring(1) == User_A)
-       {
-        String Balance_A = String(Available_Balance_A);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_A + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Agargaon' station.");
-        Serial.println("Passenger Name : A ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : A ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);    
-    
-                 if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 10 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 10;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}   
-                  }
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 40 from your account.");
-
-                        int    Current_Balance_A = Available_Balance_A - 40;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);   
-                      }
-                      else{}
-                  }                                        
-          }  
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
-       if (content.substring(1) == User_B)
-       {
-        String Balance_B = String(Available_Balance_B);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_B + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Agargaon' station.");
-        Serial.println("Passenger Name : B ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : B ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);    
-    
-                 if (Mirpur_10 == true)
-                  {
-                    Serial.println("Bus reached 'Mirpur-10' station.");
-                    TTPAFC.publish("Bus reached 'Mirpur-10' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 10 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 10;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 40 from your account.");
-
-                        int    Current_Balance_B = Available_Balance_B - 40;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }                                        
-          }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-       
-      if (content.substring(1) == User_C)
-      {
-        String Balance_C = String(Available_Balance_C);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_C + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println(Message_K);
-        Serial.println("User Name : C ");
-        Serial.println(Message_L); 
-        Serial.println(Message_T);
-        Serial.println(Message_Y);
-
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_L);
-        TTPAFC.publish(Message_T);
-        TTPAFC.publish(Message_Y);    
+      else if(route_x == 3) {
+          
+          int Balance_M = Available_Balance_X - route3 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
       }
-    } 
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
-  if (Mirpur_10 == true)
-  {
-    Serial.println("Bus currently at 'Mirpur-10' station.");
-    TTPAFC.publish("Bus currently at 'Mirpur-10' station.");
-
-       if (content.substring(1) == User_A)
-       {
-        String Balance_A = String(Available_Balance_A);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_A + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Mirpur-10' station");
-        Serial.println("Passenger Name : A ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : A ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);    
-    
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_A)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account");
-
-                        int    Current_Balance_A = Available_Balance_A - 30;
-                        String Message_S         = String(Current_Balance_A);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement);  
-                      }
-                      else{}
-                  }                                        
-       }  
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-
-       if (content.substring(1) == User_B)
-       {
-        String Balance_B = String(Available_Balance_B);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_B + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println("Passenger boarded at 'Mirpur-10' station");
-        Serial.println("Passenger Name : B ");
-        Serial.println(Message_K);
-        Serial.println(Message_L);
-        Serial.println();
-
-        TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-        TTPAFC.publish("Passenger Name : B ");
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish(Message_L);    
-    
-                 if (Uttara == true)
-                  {
-                    Serial.println("Bus reached 'Uttara' station.");
-                    TTPAFC.publish("Bus reached 'Uttara' station.");
-                      
-                      if (content.substring(1) == User_B)
-                      { 
-                        Serial.println("Deducted BDT 30 from your account");
-
-                        int    Current_Balance_B = Available_Balance_B - 30;
-                        String Message_S         = String(Current_Balance_B);  
-                        String Message           = Message_C + Message_S + BDT;
-                        const char* Message1 = Message.c_str();
-                    
-                        Serial.println(Message1);
-                        Serial.println(Message_F);
-                        Serial.println(Safety_Measurement);
-
-                        TTPAFC.publish(Message1);
-                        TTPAFC.publish(Message_F);
-                        TTPAFC.publish(Safety_Measurement); 
-                      }
-                      else{}
-                  }                                        
-          }
-
-/****************************************************************************************************************************************************************************************************************************************************************************/
-       
-      if (content.substring(1) == User_C)
-      {
-        String Balance_C = String(Available_Balance_C);
-        String Message_X = Message_U + Bus;
-        String Message_Z = Message_A + Balance_C + BDT;
-        const char* Message_K = Message_X.c_str();
-        const char* Message_L = Message_Z.c_str();
-        
-        Serial.println(Message_K);
-        Serial.println("User Name : C ");
-        Serial.println(Message_L); 
-        Serial.println(Message_T);
-        Serial.println(Message_Y);
-
-        TTPAFC.publish(Message_K);
-        TTPAFC.publish("User Name : C ");
-        TTPAFC.publish(Message_L);
-        TTPAFC.publish(Message_T);
-        TTPAFC.publish(Message_Y);   
+      else if(route_x == 4) {
+          
+          int Balance_M = Available_Balance_X - route4 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
       }
-    }
-  }            
+      else if(route_x == 5) {
+          
+          int Balance_M = Available_Balance_X - route5 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 6) {
+          
+          int Balance_M = Available_Balance_X - route6 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 7) {
+          
+          int Balance_M = Available_Balance_X - route7 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 8) {
+          
+          int Balance_M = Available_Balance_X - route8 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 9) {
+          
+          int Balance_M = Available_Balance_X - route9 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 10) {
+          
+          int Balance_M = Available_Balance_X - route10 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 11) {
+          
+          int Balance_M = Available_Balance_X - route11 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }     
+      }
+      else if(route_x == 12) {
+          
+          int Balance_M = Available_Balance_X - route12 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 13) {
+          
+          int Balance_M = Available_Balance_X - route13 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 14) {
+          
+          int Balance_M = Available_Balance_X - route14 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        } 
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }     
+      }
+      else if(route_x == 15) {
+          
+          int Balance_M = Available_Balance_X - route15 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 16) {
+          
+          int Balance_M = Available_Balance_X - route16 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 17) {
+          
+          int Balance_M = Available_Balance_X - route17 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 18) {
+          
+          int Balance_M = Available_Balance_X - route18 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      } 
+      else if(route_x == 19) {
+          
+          int Balance_M = Available_Balance_X - route19 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+      else if(route_x == 20) {
+          
+          int Balance_M = Available_Balance_X - route20 ;
+          
+          if(Balance_M >= 0){
+          EEPROM.write(2, Balance_M);
+          EEPROM.commit();
+          String Balance_N = String(Balance_M);
+          String Message_Q = Message_C + Balance_N + BDT;
+          const char* Message_O = Message_Q.c_str(); 
+          Serial.println(Message_O);
+          TTPAFC.publish(Message_O);
+          break; 
+        }
+        else
+        {
+          Serial.println(Message_T);
+          Serial.println(Message_R);
+                            
+          TTPAFC.publish(Message_R);
+          TTPAFC.publish(Message_T);                
+        }      
+      }
+    }     
+   
+    else if (bluedata == 100) {
+      int Balance_X = Available_Balance_A + 100;
+      EEPROM.write(0, Balance_X);
+      EEPROM.commit();
+      
+      Serial.println(Message_S);
+      TTPAFC.publish(Message_S);                    
+      } 
+   }
+     while (getID()){ 
+                    
+                    if (tagID == User_A)
+                    { 
+                      Serial.println("User name : A.");
+                      TTPAFC.publish("User name : A.");
+                      String Balance_A = String(Available_Balance_A);
+                      String Message_Z = Message_A + Balance_A + BDT;
+                      const char* Message_Y = Message_Z.c_str();
+                      Serial.println(Message_Y);
+                      TTPAFC.publish(Message_Y); 
+                                 
+                      if(bluedata == 0){
+                        Serial.println("Journey not selected!");
+                        TTPAFC.publish("Journey not selected!"); 
+                        break; 
+                      }
+                      if(bluedata == 1){
+                        int Balance_X = Available_Balance_A - route1_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 2){
+                        int Balance_X = Available_Balance_A - route2_ticket ;
+                        if(Balance_X >=0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 3){
+                        int Balance_X = Available_Balance_A - route3_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 4){
+                        int Balance_X = Available_Balance_A - route4_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 5){
+                        int Balance_X = Available_Balance_A - route5_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 6){
+                        int Balance_X = Available_Balance_A - route6_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }                                               
+                      if(bluedata == 7){
+                        int Balance_X = Available_Balance_A - route7_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 8){
+                        int Balance_X = Available_Balance_A - route8_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 9){
+                        int Balance_X = Available_Balance_A - route9_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 10){
+                        int Balance_X = Available_Balance_A - route10_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 11){
+                        int Balance_X = Available_Balance_A - route11_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 12){
+                        int Balance_X = Available_Balance_A - route12_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                       if(bluedata == 13){
+                        int Balance_X = Available_Balance_A - route13_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                       if(bluedata == 14){
+                        int Balance_X = Available_Balance_A - route14_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 15){
+                        int Balance_X = Available_Balance_A - route15_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 16){
+                        int Balance_X = Available_Balance_A - route16_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 17){
+                        int Balance_X = Available_Balance_A - route17_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 18){
+                        int Balance_X = Available_Balance_A - route18_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 19){
+                        int Balance_X = Available_Balance_A - route19_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }
+                      if(bluedata == 20){
+                        int Balance_X = Available_Balance_A - route20_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                           }
+                      }                                                                                                             
+                    }
+                                     
+                    else
+                    {
+                     Serial.println("Card Invalid!");
+                     TTPAFC.publish("Card Invalid!");  
+                    }                    
+         break;
+     }
+   
 }
 
-/****************************************************************************************************************************************************************************************************************************************************************************/
+
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
 
@@ -1909,4 +1482,24 @@ void MQTT_connect()
     }
    }
    Serial.println("MQTT Connected!\n");
-  }   
+  }
+
+/****************************************************************************************************************************************************************************************************************************************************************************/
+/****************************************************************************************************************************************************************************************************************************************************************************/
+
+boolean getID() 
+{
+  if ( ! mfrc522.PICC_IsNewCardPresent()) {
+  return false;
+  }
+  if ( ! mfrc522.PICC_ReadCardSerial()) {
+  return false;
+  }
+  tagID = "";
+  for ( uint8_t i = 0; i < 4; i++) {
+  tagID.concat(String(mfrc522.uid.uidByte[i], HEX));
+  }
+  tagID.toUpperCase();
+  mfrc522.PICC_HaltA();
+  return true;
+} 
