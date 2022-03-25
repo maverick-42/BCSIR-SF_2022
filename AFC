@@ -1,6 +1,6 @@
-
 #include <ETH.h>
 #include <WiFi.h>
+#include <Wire.h>
 #include <EEPROM.h>
 #include <WiFiAP.h>
 #include <WiFiSTA.h>
@@ -21,13 +21,15 @@
 #include <Adafruit_MQTT.h>
 #include <AsyncElegantOTA.h>
 #include <ESPAsyncWebServer.h>
+#include <LiquidCrystal_I2C.h>
 #include <Adafruit_MQTT_Client.h> 
 
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
 
 String User_A = "F2DE1333";
-String User_B = "E7728A7B";
+String User_B = "708F3D32";
+String User_C = "E7728A7B";
 
 byte readCard[4];
 String tagID = "";
@@ -43,12 +45,14 @@ String tagID = "";
 #define Message_S           "Account balance recharge successful!"
 #define BDT                 " BDT."
 
-int rstPIN = 22;
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+int rstPIN = 27;
 int ssPIN  =  5;
 MFRC522 mfrc522(ssPIN, rstPIN);
 
 int trigPIN = 17;  
-int echoPIN = 21;
+int echoPIN =  4;
 UltraSonicDistanceSensor ultrasonicSensor(trigPIN,echoPIN);
 
 
@@ -102,7 +106,7 @@ int route20_ticket = 70;
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                   
 #define AIO_USERNAME   "_Maverick_"
-#define AIO_KEY        "aio_lCfY25t7WnsYiGXNdHPNFGEGlDJj"
+#define AIO_KEY        "aio_IOCQ311zgtq9T7rYORnWGk3tKZNp"
 
   
 // BLUETOOTH CLIENT
@@ -181,6 +185,9 @@ void setup()
   SPI.begin();
   mfrc522.PCD_Init();
 
+  lcd.begin();
+  lcd.backlight();
+
   EEPROM.begin(EEPROM_SIZE);
   EEPROM.put(0, 125);
   EEPROM.put(1, 0);
@@ -209,11 +216,12 @@ void Loop0code( void * pvParameters ) {
           int distanceCm = ultrasonicSensor.measureDistanceCm(); 
           if (distanceCm <= 10)
            {
-            SerialBT.println(50);            
+            SerialBT.println(50);
+            SerialBT.println();            
         
             Serial.println(Message_G);
             Serial.println(Message_B);
- 
+                 
             TTPAFC.publish(Message_G);
             TTPAFC.publish(Message_B);
             }
@@ -241,185 +249,271 @@ void loop()
     delay(20);
    
     if (bluedata == 0) {      
-     Serial.println("Journey route not selected!");
+     Serial.println("Route not selected!");
            
      EEPROM.write(1, 0);
      EEPROM.commit();
       
-     TTPAFC.publish("Journey route not selected!");
+     TTPAFC.publish("Route not selected!");
+
+     lcd.setCursor(5,0);
+     lcd.print("Route");
+     lcd.setCursor(2,1);
+     lcd.print("Not Selected");
+     delay(3000);
+     lcd.clear();
     }
    
    else if (bluedata == 1) {
-      Serial.println("Journey selected from 'Uttara' to 'Mirpur-10'.");
+      Serial.println("Route selected 'Uttara' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");
       
       EEPROM.write(1, 1);
       EEPROM.commit();              
 
-      TTPAFC.publish("Journey selected from 'Uttara' to 'Mirpur-10'.");  
-      TTPAFC.publish("Ticket rate : 30 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. ");
+      TTPAFC.publish("Route selected 'Uttara' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT.");
+     
+      lcd.setCursor(0,0);
+      lcd.print("Route : 01");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:30Tk");
+      delay(3000);
+      lcd.clear(); 
    }
   
    else if (bluedata == 2) {
-      Serial.println("Journey selected from 'Uttara' to 'Agargaon'.");
+      Serial.println("Route selected 'Uttara' to 'Agargaon'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 2);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Uttara' to 'Agargaon'.");  
+      TTPAFC.publish("Route selected 'Uttara' to 'Agargaon'.");  
       TTPAFC.publish("Ticket rate : 40 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 02");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:40Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
    else if (bluedata == 3) {
-      Serial.println("Journey selected from 'Uttara' to 'Shahbag'.");
+      Serial.println("Route selected 'Uttara' to 'Shahbag'.");
       Serial.println("Ticket rate : 60 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 3);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Uttara' to 'Shahbag'.");  
+      TTPAFC.publish("Route selected 'Uttara' to 'Shahbag'.");  
       TTPAFC.publish("Ticket rate : 60 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 03");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:40Tk");
+      delay(3000);
+      lcd.clear(); 
      }            
 
    else if (bluedata == 4) {
-      Serial.println("Journey selected from 'Uttara' to 'Motijheel'.");
+      Serial.println("Route selected 'Uttara' to 'Motijheel'.");
       Serial.println("Ticket rate : 70 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 4);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Uttara' to 'Motijheel'.");  
-      TTPAFC.publish("Ticket rate : 70 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Uttara' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 70 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 04");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:70Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
    else if (bluedata == 5) {
-      Serial.println("Journey selected from 'Mirpur-10' to 'Agargaon'.");
+      Serial.println("Route selected 'Mirpur-10' to 'Agargaon'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 5);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Agargaon'.");  
+      TTPAFC.publish("Route selected 'Mirpur-10' to 'Agargaon'.");  
       TTPAFC.publish("Ticket rate : 10 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Swipe your card to pay the required amount. ");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 05");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:10Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
    else if (bluedata == 6) {
-      Serial.println("Journey selected from 'Mirpur-10' to 'Shahbag'.");
+      Serial.println("Route selected 'Mirpur-10' to 'Shahbag'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 6);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Shahbag'.");  
-      TTPAFC.publish("Ticket rate : 30 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Mirpur-10' to 'Shahbag'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 06");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:30Tk");
+      delay(3000);
+      lcd.clear();  
      }
 
     else if (bluedata == 7) {
-      Serial.println("Journey selected from 'Mirpur-10' to 'Motijheel'.");
+      Serial.println("Route selected 'Mirpur-10' to 'Motijheel'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 7);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Motijheel'.");  
-      TTPAFC.publish("Ticket rate : 40 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Mirpur-10' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 40 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 07");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:40Tk");
+      delay(3000);
+      lcd.clear();  
      }
 
     else if (bluedata == 8) {
-      Serial.println("Journey selected from 'Mirpur-10' to 'Uttara'.");
+      Serial.println("Route selected 'Mirpur-10' to 'Uttara'.");
       Serial.println("Ticket rate : 25 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 8);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Mirpur-10' to 'Uttara'.");  
-      TTPAFC.publish("Ticket rate : 25 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Mirpur-10' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 25 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 08");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:25Tk");
+      delay(3000);
+      lcd.clear();   
      }
 
     else if (bluedata == 9) {
-      Serial.println("Journey selected from 'Agargaon' to 'Shahbag'.");
+      Serial.println("Route selected 'Agargaon' to 'Shahbag'.");
       Serial.println("Ticket rate : 20 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 9);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Agargaon' to 'Shahbag'.");  
-      TTPAFC.publish("Ticket rate : 20 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Agargaon' to 'Shahbag'.");  
+      TTPAFC.publish("Ticket rate : 20 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 09");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:20Tk");
+      delay(3000);
+      lcd.clear();  
      }
 
     else if (bluedata == 10) {
-      Serial.println("Journey selected from 'Agargaon' to 'Motijheel'.");
+      Serial.println("Route selected 'Agargaon' to 'Motijheel'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 10);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Agargaon' to 'Motijheel'.");  
-      TTPAFC.publish("Ticket rate : 30 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Agargaon' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 10");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:30Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
     else if (bluedata == 11) {
-      Serial.println("Journey selected from 'Agargaon' to 'Mirpur-10'.");
+      Serial.println("Route selected 'Agargaon' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 11);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Agargaon' to 'Mirpur-10'.");  
-      TTPAFC.publish("Ticket rate : 10 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Agargaon' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 11");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:10Tk");
+      delay(3000);
+      lcd.clear();  
      }
 
     else if (bluedata == 12) {
-      Serial.println("Journey selected from 'Agargaon' to 'Uttara'.");
+      Serial.println("Route selected 'Agargaon' to 'Uttara'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 12);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Agargaon' to 'Uttara'.");  
-      TTPAFC.publish("Ticket rate : 40 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Agargaon' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 40 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 12");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:40Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
      else if (bluedata == 13) {
-      Serial.println("Journey selected from 'Shahbag' to 'Motijheel'.");
+      Serial.println("Route selected 'Shahbag' to 'Motijheel'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 13);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Shahbag' to 'Motijheel'.");  
-      TTPAFC.publish("Ticket rate : 10 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Shahbag' to 'Motijheel'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 13");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:10Tk");
+      delay(3000);
+      lcd.clear();  
      }                                  
 
      else if (bluedata == 14) {
-      Serial.println("Journey selected from 'Shahbag' to 'Agargaon'.");
+      Serial.println("Route selected 'Shahbag' to 'Agargaon'.");
       Serial.println("Ticket rate : 20 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
@@ -427,133 +521,254 @@ void loop()
       EEPROM.commit();
       
       TTPAFC.publish("Journey selected from 'Shahbag' to 'Agargaon'.");  
-      TTPAFC.publish("Ticket rate : 20 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Ticket rate : 20 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 14");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:20Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
      else if (bluedata == 15) {
-      Serial.println("Journey selected from 'Shahbag' to 'Mirpur-10'.");
+      Serial.println("Route selected 'Shahbag' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 15);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Shahbag' to 'Mirpur-10'.");  
-      TTPAFC.publish("Ticket rate : 30 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Shahbag' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 30 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 15");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:30Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
      else if (bluedata == 16) {
-      Serial.println("Journey selected from 'Shahbag' to 'Uttara'.");
+      Serial.println("Route selected 'Shahbag' to 'Uttara'.");
       Serial.println("Ticket rate : 60 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 16);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Shahbag' to 'Uttara'.");  
-      TTPAFC.publish("Ticket rate : 60 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Shahbag' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 60 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 16");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:60Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
      else if (bluedata == 17) {
-      Serial.println("Journey selected from 'Motijheel' to 'Shahbag'.");
+      Serial.println("Route selected 'Motijheel' to 'Shahbag'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 17);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Motijheel' to 'Shahbag'.");  
-      TTPAFC.publish("Ticket rate : 10 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Motijheel' to 'Shahbag'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 17");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:10Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
       else if (bluedata == 18) {
-      Serial.println("Journey selected from 'Motijheel' to 'Agargaon'.");
+      Serial.println("Route selected 'Motijheel' to 'Agargaon'.");
       Serial.println("Ticket rate : 25 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 18);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Motijheel' to 'Agargaon'.");  
-      TTPAFC.publish("Ticket rate : 25 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Motijheel' to 'Agargaon'.");  
+      TTPAFC.publish("Ticket rate : 25 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 18");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:25Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
       else if (bluedata == 19) {
-      Serial.println("Journey selected from 'Motijheel' to 'Mirpur-10'.");
+      Serial.println("Route selected 'Motijheel' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 19);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Motijheel' to 'Mirpur-10'.");  
-      TTPAFC.publish("Ticket rate : 40 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Motijheel' to 'Mirpur-10'.");  
+      TTPAFC.publish("Ticket rate : 40 BDT.");
+      
+      lcd.setCursor(0,0);
+      lcd.print("Route : 19");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:40Tk");
+      delay(3000);
+      lcd.clear(); 
      }
 
       else if (bluedata == 20) {
-      Serial.println("Journey selected from 'Motijheel' to 'Uttara'.");
+      Serial.println("Route selected 'Motijheel' to 'Uttara'.");
       Serial.println("Ticket rate : 70 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
       
       EEPROM.write(1, 20);
       EEPROM.commit();
       
-      TTPAFC.publish("Journey selected from 'Motijheel' to 'Uttara'.");  
-      TTPAFC.publish("Ticket rate : 70 BDT."); 
-      TTPAFC.publish("Swipe your card to pay the required amount. "); 
+      TTPAFC.publish("Route selected 'Motijheel' to 'Uttara'.");  
+      TTPAFC.publish("Ticket rate : 70 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 20");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:70Tk");
+      delay(3000);
+      lcd.clear();  
      }                         
                             
    else if (bluedata == 21) {
-      Serial.println("Passenger boarded at 'Shahbag' station.");
+      Serial.println("Passenger boarded at 'Shahbag' stop.");
       Serial.println("Passenger Name : A ");              
         
-      TTPAFC.publish("Passenger boarded at 'Shahbag' station.");
-      TTPAFC.publish("Passenger Name : A "); 
+      TTPAFC.publish("Passenger boarded at 'Shahbag' stop.");
+      TTPAFC.publish("Passenger Name : A ");
+
+      lcd.setCursor(0,0);
+      lcd.print("Commuter Boarded");
+      lcd.setCursor(0,1);
+      lcd.print("Commuter Name: A");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Shahbag     Stop");
+      lcd.setCursor(0,1);
+      lcd.print("Motijheel   Stop");
+      delay(2000);
+      lcd.clear();  
       }
     else if (bluedata == 22) {
-      Serial.println("Passenger boarded at 'Mirpur-10' station.");
+      Serial.println("Passenger boarded at 'Mirpur-10' stop.");
       Serial.println("Passenger Name : B ");              
         
-      TTPAFC.publish("Passenger boarded at 'Mirpur-10' station.");
-      TTPAFC.publish("Passenger Name : B ");      
+      TTPAFC.publish("Passenger boarded at 'Mirpur-10' stop.");
+      TTPAFC.publish("Passenger Name : B ");
+
+      lcd.setCursor(0,0);
+      lcd.print("Commuter Boarded");
+      lcd.setCursor(0,1);
+      lcd.print("Commuter Name: B");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Mirpur-10   Stop");
+      lcd.setCursor(0,1);
+      lcd.print("Agargaon    Stop");
+      delay(2000);
+      lcd.clear(); 
+      
       }
     else if (bluedata == 23) {
-      Serial.println("Passenger boarded at 'Uttara' station.");
+      Serial.println("Passenger boarded at 'Uttara' stop.");
       Serial.println("Passenger Name : A ");              
         
-      TTPAFC.publish("Passenger boarded at 'Uttara' station.");
-      TTPAFC.publish("Passenger Name : A ");           
+      TTPAFC.publish("Passenger boarded at 'Uttara' stop.");
+      TTPAFC.publish("Passenger Name : A ");
+
+      lcd.setCursor(0,0);
+      lcd.print("Commuter Boarded");
+      lcd.setCursor(0,1);
+      lcd.print("Commuter Name: A");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Uttara      Stop");
+      lcd.setCursor(0,1);
+      lcd.print("Cantonment  Stop");
+      delay(2000);
+      lcd.clear();            
       }
     else if (bluedata == 24) {
-      Serial.println("Passenger boarded at 'Cantonment' station.");
+      Serial.println("Passenger boarded at 'Cantonment' stop.");
       Serial.println("Passenger Name : B ");              
         
-      TTPAFC.publish("Passenger boarded at 'Cantonment' station.");
-      TTPAFC.publish("Passenger Name : B ");        
+      TTPAFC.publish("Passenger boarded at 'Cantonment' stop.");
+      TTPAFC.publish("Passenger Name : B ");
+
+      lcd.setCursor(0,0);
+      lcd.print("Commuter Boarded");
+      lcd.setCursor(0,1);
+      lcd.print("Commuter Name: B");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Cantonment  Stop");
+      lcd.setCursor(0,1);
+      lcd.print("Uttara      Stop");
+      delay(2000);
+      lcd.clear();        
       }
     else if (bluedata == 25) {
       Serial.println(Message_I);
-      TTPAFC.publish(Message_I);                    
+      TTPAFC.publish(Message_I); 
+
+      lcd.setCursor(0,1);
+      lcd.print("QR code:Invalid!");
+
+      delay(3000);
+      lcd.clear();                        
       }   
    
     else if (bluedata == 50) {
-      Serial.println("Student Pass.");
-      Serial.println("Passenger Name : X ");              
 
+      String Balance_X = String(Available_Balance_X);
+      String Message_J = Message_A + Balance_X + BDT;
+      const char* Message_Y = Message_J.c_str();      
+      
+      Serial.println("Student Pass.");
+      Serial.println("Passenger Name : X ");
+      Serial.println(Message_Y);
+
+      lcd.setCursor(2,0);
+      lcd.print("Student Pass");
+      lcd.setCursor(0,1);
+      lcd.print("Passenger Name:X"); 
+      delay(3000);
+      lcd.clear();                  
+      
       int route_x = EEPROM.read(1); 
         
       TTPAFC.publish("Student Pass.");
-      TTPAFC.publish("Passenger Name : X "); 
+      TTPAFC.publish("Passenger Name : X ");
+      TTPAFC.publish(Message_Y);  
 
         if(route_x == 0) {
-          Serial.println("Journey route not selected!");
-          TTPAFC.publish("Journey route not selected!");   
+          Serial.println("Route not selected!");
+          TTPAFC.publish("Route not selected!");
+          lcd.setCursor(5,0);
+          lcd.print("Route");
+          lcd.setCursor(2,1);
+          lcd.print("Not Selected");
+          delay(3000);
+          lcd.clear();             
         }
         else if(route_x == 1) {
           
@@ -575,7 +790,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }
       }
       else if(route_x == 2) {
@@ -598,7 +820,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card"); 
+          delay(2000);
+          lcd.clear();              
         }      
       }
       else if(route_x == 3) {
@@ -621,7 +850,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 4) {
@@ -644,7 +880,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 5) {
@@ -667,7 +910,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 6) {
@@ -690,7 +940,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T); 
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();               
         }      
       }
       else if(route_x == 7) {
@@ -713,7 +970,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 8) {
@@ -736,7 +1000,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 9) {
@@ -759,7 +1030,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 10) {
@@ -782,7 +1060,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 11) {
@@ -805,7 +1090,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();
         }     
       }
       else if(route_x == 12) {
@@ -828,7 +1120,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T); 
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();               
         }      
       }
       else if(route_x == 13) {
@@ -849,9 +1148,16 @@ void loop()
         {
           Serial.println(Message_T);
           Serial.println(Message_R);
-                            
+                                    
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();
         }      
       }
       else if(route_x == 14) {
@@ -874,7 +1180,15 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+
+               
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();
         }     
       }
       else if(route_x == 15) {
@@ -897,7 +1211,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T); 
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();               
         }      
       }
       else if(route_x == 16) {
@@ -920,7 +1241,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 17) {
@@ -943,7 +1271,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T); 
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();               
         }      
       }
       else if(route_x == 18) {
@@ -966,7 +1301,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);  
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();              
         }      
       } 
       else if(route_x == 19) {
@@ -989,7 +1331,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
       else if(route_x == 20) {
@@ -1012,7 +1361,14 @@ void loop()
           Serial.println(Message_R);
                             
           TTPAFC.publish(Message_R);
-          TTPAFC.publish(Message_T);                
+          TTPAFC.publish(Message_T);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Deficient  Fund!");
+          lcd.setCursor(0,1);
+          lcd.print("Top-up your card");
+          delay(2000);
+          lcd.clear();                
         }      
       }
     }     
@@ -1023,9 +1379,19 @@ void loop()
       EEPROM.commit();
       
       Serial.println(Message_S);
-      TTPAFC.publish(Message_S);                    
+      TTPAFC.publish(Message_S);
+            {
+
+            lcd.setCursor(0,0);
+            lcd.print("Account recharge");
+            lcd.setCursor(3,1);
+            lcd.print("successful");
+            
+            delay(3000);
+            lcd.clear();                   
       } 
-   }
+    }
+  }
      while (getID()){ 
                     
                     if (tagID == User_A)
@@ -1035,12 +1401,22 @@ void loop()
                       String Balance_A = String(Available_Balance_A);
                       String Message_Z = Message_A + Balance_A + BDT;
                       const char* Message_Y = Message_Z.c_str();
+                      lcd.setCursor(1,0);
+                      lcd.print("User Name : A.");
+                      delay(3000);
+                      lcd.clear();                      
                       Serial.println(Message_Y);
                       TTPAFC.publish(Message_Y); 
                                  
                       if(bluedata == 0){
-                        Serial.println("Journey not selected!");
-                        TTPAFC.publish("Journey not selected!"); 
+                        Serial.println("Route not selected!");
+                        TTPAFC.publish("Route not selected!");
+                        lcd.setCursor(5,0);
+                        lcd.print("Route");
+                        lcd.setCursor(2,1);
+                        lcd.print("Not Selected");
+                        delay(3000);
+                        lcd.clear();                 
                         break; 
                       }
                       if(bluedata == 1){
@@ -1061,6 +1437,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                            
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 2){
@@ -1081,6 +1464,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 3){
@@ -1101,6 +1491,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 4){
@@ -1121,6 +1518,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 5){
@@ -1141,6 +1545,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 6){
@@ -1161,6 +1572,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }                                               
                       if(bluedata == 7){
@@ -1181,6 +1599,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 8){
@@ -1201,6 +1626,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 9){
@@ -1221,6 +1653,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 10){
@@ -1241,6 +1680,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 11){
@@ -1261,6 +1707,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 12){
@@ -1281,6 +1734,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                        if(bluedata == 13){
@@ -1301,6 +1761,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                        if(bluedata == 14){
@@ -1321,6 +1788,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 15){
@@ -1341,6 +1815,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 16){
@@ -1361,6 +1842,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 17){
@@ -1381,6 +1869,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 18){
@@ -1401,6 +1896,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 19){
@@ -1421,6 +1923,13 @@ void loop()
                             
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }
                       if(bluedata == 20){
@@ -1441,14 +1950,27 @@ void loop()
 
                             TTPAFC.publish(Message_R);
                             TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
                            }
                       }                                                                                                             
                     }
                                      
                     else
                     {
-                     Serial.println("Card Invalid!");
-                     TTPAFC.publish("Card Invalid!");  
+                     Serial.println("Card:Invalid");
+                     TTPAFC.publish("Card:Invalid");
+                     
+                     lcd.setCursor(2,1);
+                     lcd.print("Card:Invalid");
+
+                     delay(3000);
+                     lcd.clear();
                     }                    
          break;
      }
