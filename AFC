@@ -1,3 +1,4 @@
+
 #include <ETH.h>
 #include <WiFi.h>
 #include <Wire.h>
@@ -96,6 +97,10 @@ int route17_ticket = 10;
 int route18_ticket = 25;
 int route19_ticket = 40;
 int route20_ticket = 70;
+int route45_ticket = 15;
+int route65_ticket = 10;
+int route75_ticket = 15;
+int route85_ticket = 10;
 
 /****************************************************************************************************************************************************************************************************************************************************************************/
 /****************************************************************************************************************************************************************************************************************************************************************************/
@@ -105,7 +110,7 @@ int route20_ticket = 70;
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                   
 #define AIO_USERNAME   "_Maverick_"
-#define AIO_KEY        "aio_kfTM45l2FsCR2S81MZvbQs2NMyJT"
+#define AIO_KEY        "aio_tSyq44mUZwpZs9XDGfXU8GiVatdK"
 
   
 // BLUETOOTH CLIENT
@@ -220,14 +225,8 @@ void Loop0code( void * pvParameters ) {
             SerialBT.println();            
         
             Serial.println(Message_G);
-            TTPAFC.publish(Message_G);
-
-            lcd.setCursor(0,0);
-            lcd.print("BRTC-AFC System.");
-            delay(1500);
-            lcd.clear();
-            break;          
-            }
+            TTPAFC.publish(Message_G);;         
+          }
           delay(2500);   
         }
 }
@@ -287,7 +286,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -314,7 +313,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -340,7 +339,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -366,7 +365,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -393,7 +392,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -419,7 +418,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -445,7 +444,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -471,7 +470,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -497,7 +496,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -523,7 +522,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -549,7 +548,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -575,7 +574,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -601,7 +600,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -627,7 +626,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -653,7 +652,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -679,7 +678,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -705,7 +704,7 @@ void loop()
       lcd.clear();
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -731,7 +730,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -757,7 +756,7 @@ void loop()
       lcd.clear(); 
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -783,7 +782,7 @@ void loop()
       lcd.clear();  
       
       lcd.setCursor(0,0);
-      lcd.print("Place your card");
+      lcd.print("Swipe your card");
       lcd.setCursor(0,1);
       lcd.print("to pay the sum.");
       delay(1500);
@@ -879,8 +878,112 @@ void loop()
       lcd.print("QR code:Invalid!");
       delay(2500);
       lcd.clear();                        
-      }   
-   
+      }
+      
+    else if (bluedata == 45) {
+      Serial.println("Route selected 'RBGHS' to 'BCSIR'.");
+      Serial.println("Ticket rate : 15 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 45);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Route selected 'RBGHS' to 'BCSIR'.");  
+      TTPAFC.publish("Ticket rate : 15 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 45");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:15Tk");
+      delay(2500);
+      lcd.clear();  
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear(); 
+     }
+     
+    else if (bluedata == 65) {
+      Serial.println("Route selected 'Airport_Terminal' to 'Purbachal_Terminal'.");
+      Serial.println("Ticket rate : 10 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 65);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Route selected 'Airport_Terminal' to 'Purbachal_Terminal'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 65");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:10Tk");
+      delay(2500);
+      lcd.clear();  
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear(); 
+     }
+    
+    else if (bluedata == 75) {
+      Serial.println("Route selected 'BCSIR' to 'RBGHS'.");
+      Serial.println("Ticket rate : 15 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 75);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Route selected 'BCSIR' to 'RBGHS'.");  
+      TTPAFC.publish("Ticket rate : 15 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 75");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:15Tk");
+      delay(2500);
+      lcd.clear();  
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear(); 
+     }
+
+    else if (bluedata == 85) {
+      Serial.println("Route selected 'Purbachal_Terminal' to 'Airport_Terminal'.");
+      Serial.println("Ticket rate : 10 BDT."); 
+      Serial.println("Swipe your card to pay the required amount. ");              
+      
+      EEPROM.write(1, 85);
+      EEPROM.commit();
+      
+      TTPAFC.publish("Route selected 'Purbachal_Terminal' to 'Airport_Terminal'.");  
+      TTPAFC.publish("Ticket rate : 10 BDT.");
+
+      lcd.setCursor(0,0);
+      lcd.print("Route : 85");
+      lcd.setCursor(0,1);
+      lcd.print("Ticket Rate:10Tk");
+      delay(2500);
+      lcd.clear();  
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear(); 
+     }
+           
     else if (bluedata == 50) {
 
       String Balance_X = String(Available_Balance_X);
@@ -1684,6 +1787,17 @@ void loop()
           lcd.clear();                
         }      
       }
+
+       else if(route_x == 45 || route_x == 65 || route_x == 75 || route_x == 85)
+          {
+            Serial.println("Access denied!");
+            TTPAFC.publish("Access denied!");
+                     
+            lcd.setCursor(0,1);
+            lcd.print(" Access denied! ");
+            delay(1500);
+            lcd.clear();
+          }
     }     
    
     else if (bluedata == 100) {
@@ -2441,10 +2555,150 @@ void loop()
                             delay(2000);
                             lcd.clear();
                            }
+                      }
+                      if(bluedata == 45){
+                        int Balance_X = Available_Balance_A - route45_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 65){
+                        int Balance_X = Available_Balance_A - route65_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 75){
+                        int Balance_X = Available_Balance_A - route75_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 85){
+                        int Balance_X = Available_Balance_A - route85_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(0, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
                       }                                                                                                             
                     }
 
-                    if (tagID == User_B)
+                    else if (tagID == User_B)
                     { 
                       Serial.println("User name : B.");
                       TTPAFC.publish("User name : B.");
@@ -3178,20 +3432,31 @@ void loop()
                             delay(2000);
                             lcd.clear();
                            }
-                      }                                                                                                             
-                    }
-                                     
-                    else
+                      }
+                      
+                    if(bluedata == 45 || bluedata == 65 || bluedata == 75 || bluedata == 85)
                     {
-                     Serial.println("Card:Invalid");
-                     TTPAFC.publish("Card:Invalid");
+                      Serial.println("Access denied!");
+                      TTPAFC.publish("Access denied!");
                      
-                     lcd.setCursor(2,1);
-                     lcd.print("Card:Invalid");
+                      lcd.setCursor(0,1);
+                      lcd.print(" Access denied! ");
+                      delay(1500);
+                      lcd.clear();
+                    }                                                                                                             
+                   }                                     
+                   
+                   else
+                   {
+                    Serial.println("Card:Invalid");
+                    TTPAFC.publish("Card:Invalid");
+                     
+                    lcd.setCursor(2,1);
+                    lcd.print("Card:Invalid");
 
-                     delay(2500);
-                     lcd.clear();
-                    }                    
+                    delay(2500);
+                    lcd.clear();
+                   }                    
          break;
      }
    
