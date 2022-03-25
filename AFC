@@ -36,7 +36,6 @@ String tagID = "";
 
 #define EEPROM_SIZE          12
 #define Message_G           "Welcome to Bangladesh Road Transportation AFC System."
-#define Message_B           "Please place your user card in front of the scanner..."
 #define Message_I           "QR code invalid."
 #define Message_A           "Available balance : "
 #define Message_C           "Your current balance : "
@@ -106,7 +105,7 @@ int route20_ticket = 70;
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                   
 #define AIO_USERNAME   "_Maverick_"
-#define AIO_KEY        "aio_IOCQ311zgtq9T7rYORnWGk3tKZNp"
+#define AIO_KEY        "aio_kfTM45l2FsCR2S81MZvbQs2NMyJT"
 
   
 // BLUETOOTH CLIENT
@@ -189,9 +188,10 @@ void setup()
   lcd.backlight();
 
   EEPROM.begin(EEPROM_SIZE);
-  EEPROM.put(0, 125);
+  EEPROM.put(0, 200);
   EEPROM.put(1, 0);
   EEPROM.put(2, 85);
+  EEPROM.put(3, 125);
     
  {
    xTaskCreatePinnedToCore(
@@ -220,12 +220,15 @@ void Loop0code( void * pvParameters ) {
             SerialBT.println();            
         
             Serial.println(Message_G);
-            Serial.println(Message_B);
-                 
             TTPAFC.publish(Message_G);
-            TTPAFC.publish(Message_B);
+
+            lcd.setCursor(0,0);
+            lcd.print("BRTC-AFC System.");
+            delay(1500);
+            lcd.clear();
+            break;          
             }
-         delay(5000);   
+          delay(2500);   
         }
 }
 
@@ -241,6 +244,7 @@ void loop()
 
    int Available_Balance_A = EEPROM.read(0);
    int Available_Balance_X = EEPROM.read(2);
+   int Available_Balance_E = EEPROM.read(3);
   
    while(SerialBT.available())
    {
@@ -260,7 +264,7 @@ void loop()
      lcd.print("Route");
      lcd.setCursor(2,1);
      lcd.print("Not Selected");
-     delay(3000);
+     delay(2500);
      lcd.clear();
     }
    
@@ -279,8 +283,16 @@ void loop()
       lcd.print("Route : 01");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:30Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();       
+       
    }
   
    else if (bluedata == 2) {
@@ -298,8 +310,15 @@ void loop()
       lcd.print("Route : 02");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:40Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();   
      }
 
    else if (bluedata == 3) {
@@ -317,8 +336,15 @@ void loop()
       lcd.print("Route : 03");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:40Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();  
      }            
 
    else if (bluedata == 4) {
@@ -336,8 +362,15 @@ void loop()
       lcd.print("Route : 04");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:70Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();  
      }
 
    else if (bluedata == 5) {
@@ -356,8 +389,15 @@ void loop()
       lcd.print("Route : 05");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:10Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();  
      }
 
    else if (bluedata == 6) {
@@ -375,7 +415,14 @@ void loop()
       lcd.print("Route : 06");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:30Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear();  
      }
 
@@ -394,7 +441,14 @@ void loop()
       lcd.print("Route : 07");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:40Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear();  
      }
 
@@ -413,7 +467,14 @@ void loop()
       lcd.print("Route : 08");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:25Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear();   
      }
 
@@ -432,7 +493,14 @@ void loop()
       lcd.print("Route : 09");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:20Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear();  
      }
 
@@ -451,8 +519,15 @@ void loop()
       lcd.print("Route : 10");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:30Tk");
-      delay(3000);
+      delay(2500);
       lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();  
      }
 
     else if (bluedata == 11) {
@@ -470,7 +545,14 @@ void loop()
       lcd.print("Route : 11");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:10Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear();  
      }
 
@@ -489,8 +571,15 @@ void loop()
       lcd.print("Route : 12");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:40Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();   
      }
 
      else if (bluedata == 13) {
@@ -508,8 +597,15 @@ void loop()
       lcd.print("Route : 13");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:10Tk");
-      delay(3000);
-      lcd.clear();  
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear(); 
      }                                  
 
      else if (bluedata == 14) {
@@ -527,7 +623,14 @@ void loop()
       lcd.print("Route : 14");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:20Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear(); 
      }
 
@@ -546,7 +649,14 @@ void loop()
       lcd.print("Route : 15");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:30Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear(); 
      }
 
@@ -565,8 +675,15 @@ void loop()
       lcd.print("Route : 16");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:60Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();  
      }
 
      else if (bluedata == 17) {
@@ -584,8 +701,15 @@ void loop()
       lcd.print("Route : 17");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:10Tk");
-      delay(3000);
-      lcd.clear(); 
+      delay(2500);
+      lcd.clear();
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear();   
      }
 
       else if (bluedata == 18) {
@@ -603,7 +727,14 @@ void loop()
       lcd.print("Route : 18");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:25Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear(); 
      }
 
@@ -622,7 +753,14 @@ void loop()
       lcd.print("Route : 19");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:40Tk");
-      delay(3000);
+      delay(2500);
+      lcd.clear(); 
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
       lcd.clear(); 
      }
 
@@ -641,8 +779,15 @@ void loop()
       lcd.print("Route : 20");
       lcd.setCursor(0,1);
       lcd.print("Ticket Rate:70Tk");
-      delay(3000);
+      delay(2500);
       lcd.clear();  
+      
+      lcd.setCursor(0,0);
+      lcd.print("Place your card");
+      lcd.setCursor(0,1);
+      lcd.print("to pay the sum.");
+      delay(1500);
+      lcd.clear(); 
      }                         
                             
    else if (bluedata == 21) {
@@ -656,13 +801,13 @@ void loop()
       lcd.print("Commuter Boarded");
       lcd.setCursor(0,1);
       lcd.print("Commuter Name: A");
-      delay(3000);
+      delay(2500);
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Shahbag     Stop");
       lcd.setCursor(0,1);
       lcd.print("Motijheel   Stop");
-      delay(2000);
+      delay(2500);
       lcd.clear();  
       }
     else if (bluedata == 22) {
@@ -676,13 +821,13 @@ void loop()
       lcd.print("Commuter Boarded");
       lcd.setCursor(0,1);
       lcd.print("Commuter Name: B");
-      delay(3000);
+      delay(2500);
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Mirpur-10   Stop");
       lcd.setCursor(0,1);
       lcd.print("Agargaon    Stop");
-      delay(2000);
+      delay(2500);
       lcd.clear(); 
       
       }
@@ -697,13 +842,13 @@ void loop()
       lcd.print("Commuter Boarded");
       lcd.setCursor(0,1);
       lcd.print("Commuter Name: A");
-      delay(3000);
+      delay(2500);
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Uttara      Stop");
       lcd.setCursor(0,1);
       lcd.print("Cantonment  Stop");
-      delay(2000);
+      delay(2500);
       lcd.clear();            
       }
     else if (bluedata == 24) {
@@ -717,13 +862,13 @@ void loop()
       lcd.print("Commuter Boarded");
       lcd.setCursor(0,1);
       lcd.print("Commuter Name: B");
-      delay(3000);
+      delay(2500);
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Cantonment  Stop");
       lcd.setCursor(0,1);
       lcd.print("Uttara      Stop");
-      delay(2000);
+      delay(2500);
       lcd.clear();        
       }
     else if (bluedata == 25) {
@@ -732,33 +877,41 @@ void loop()
 
       lcd.setCursor(0,1);
       lcd.print("QR code:Invalid!");
-
-      delay(3000);
+      delay(2500);
       lcd.clear();                        
       }   
    
     else if (bluedata == 50) {
 
       String Balance_X = String(Available_Balance_X);
-      String Message_J = Message_A + Balance_X + BDT;
+      String Message_K = Balance_X + BDT;
+      String Message_J = Message_A + Balance_X + BDT;      
       const char* Message_Y = Message_J.c_str();      
       
       Serial.println("Student Pass.");
       Serial.println("Passenger Name : X ");
-      Serial.println(Message_Y);
-
-      lcd.setCursor(2,0);
-      lcd.print("Student Pass");
-      lcd.setCursor(0,1);
-      lcd.print("Passenger Name:X"); 
-      delay(3000);
-      lcd.clear();                  
+      Serial.println(Message_Y);                    
       
       int route_x = EEPROM.read(1); 
         
       TTPAFC.publish("Student Pass.");
       TTPAFC.publish("Passenger Name : X ");
-      TTPAFC.publish(Message_Y);  
+      TTPAFC.publish(Message_Y); 
+
+      lcd.setCursor(2,0);
+      lcd.print("Student Pass");
+      lcd.setCursor(0,1);
+      lcd.print("Passenger Name:X"); 
+      delay(2500);
+      lcd.clear();
+
+      lcd.setCursor(0,0);
+      lcd.print("Available credit");
+      lcd.setCursor(0,1);
+      lcd.print(Message_K); 
+      delay(2500);
+      lcd.clear();
+      delay(500);
 
         if(route_x == 0) {
           Serial.println("Route not selected!");
@@ -767,7 +920,7 @@ void loop()
           lcd.print("Route");
           lcd.setCursor(2,1);
           lcd.print("Not Selected");
-          delay(3000);
+          delay(2500);
           lcd.clear();             
         }
         else if(route_x == 1) {
@@ -778,10 +931,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
-          String Message_Q = Message_C + Balance_N + BDT;
+          String Message_L = Balance_N + BDT;
+          String Message_Q = Message_C + Balance_N + BDT;          
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2500);
+          lcd.clear();
           break; 
         }
         else
@@ -808,10 +969,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -838,10 +1007,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -868,10 +1045,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -898,10 +1083,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -928,10 +1121,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -958,10 +1159,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -988,10 +1197,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1018,10 +1235,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1048,10 +1273,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1078,10 +1311,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1108,10 +1349,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1138,10 +1387,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1168,10 +1425,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         } 
         else
@@ -1199,10 +1464,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1229,10 +1502,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1259,10 +1540,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1289,10 +1578,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1319,10 +1616,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1349,10 +1654,18 @@ void loop()
           EEPROM.write(2, Balance_M);
           EEPROM.commit();
           String Balance_N = String(Balance_M);
+          String Message_L = Balance_N + BDT;
           String Message_Q = Message_C + Balance_N + BDT;
           const char* Message_O = Message_Q.c_str(); 
           Serial.println(Message_O);
           TTPAFC.publish(Message_O);
+          
+          lcd.setCursor(0,0);
+          lcd.print("Current  balance");
+          lcd.setCursor(0,1);
+          lcd.print(Message_L); 
+          delay(2000);
+          lcd.clear();
           break; 
         }
         else
@@ -1387,7 +1700,7 @@ void loop()
             lcd.setCursor(3,1);
             lcd.print("successful");
             
-            delay(3000);
+            delay(2500);
             lcd.clear();                   
       } 
     }
@@ -1399,14 +1712,24 @@ void loop()
                       Serial.println("User name : A.");
                       TTPAFC.publish("User name : A.");
                       String Balance_A = String(Available_Balance_A);
+                      String Message_K = Balance_A + BDT;
                       String Message_Z = Message_A + Balance_A + BDT;
                       const char* Message_Y = Message_Z.c_str();
+                      
+                      Serial.println(Message_Y);
+                      TTPAFC.publish(Message_Y);
+                      
                       lcd.setCursor(1,0);
                       lcd.print("User Name : A.");
-                      delay(3000);
-                      lcd.clear();                      
-                      Serial.println(Message_Y);
-                      TTPAFC.publish(Message_Y); 
+                      delay(2500);
+                      lcd.clear(); 
+                      
+                      lcd.setCursor(0,0);
+                      lcd.print("Available credit");
+                      lcd.setCursor(0,1);
+                      lcd.print(Message_K); 
+                      delay(2500);
+                      lcd.clear();                                          
                                  
                       if(bluedata == 0){
                         Serial.println("Route not selected!");
@@ -1415,7 +1738,7 @@ void loop()
                         lcd.print("Route");
                         lcd.setCursor(2,1);
                         lcd.print("Not Selected");
-                        delay(3000);
+                        delay(2500);
                         lcd.clear();                 
                         break; 
                       }
@@ -1425,10 +1748,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1452,10 +1783,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1479,10 +1818,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1506,10 +1853,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1533,10 +1888,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1560,10 +1923,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1587,10 +1958,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1614,10 +1993,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1641,10 +2028,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1668,10 +2063,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1695,10 +2098,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1722,10 +2133,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1749,10 +2168,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1776,10 +2203,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1803,10 +2238,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1830,10 +2273,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1857,10 +2308,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1884,10 +2343,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1911,10 +2378,18 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1938,10 +2413,755 @@ void loop()
                         EEPROM.write(0, Balance_X);
                         EEPROM.commit();
                         String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
                         String Message_Z = Message_C + Balance_A + BDT;
                         const char* Message_X = Message_Z.c_str(); 
                         Serial.println(Message_X);
                         TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }                                                                                                             
+                    }
+
+                    if (tagID == User_B)
+                    { 
+                      Serial.println("User name : B.");
+                      TTPAFC.publish("User name : B.");
+                      String Balance_A = String(Available_Balance_E);
+                      String Message_K = Balance_A + BDT;
+                      String Message_Z = Message_A + Balance_A + BDT;
+                      const char* Message_Y = Message_Z.c_str();
+                      
+                      Serial.println(Message_Y);
+                      TTPAFC.publish(Message_Y);
+                      
+                      lcd.setCursor(1,0);
+                      lcd.print("User Name : B.");
+                      delay(2500);
+                      lcd.clear(); 
+                      
+                      lcd.setCursor(0,0);
+                      lcd.print("Available credit");
+                      lcd.setCursor(0,1);
+                      lcd.print(Message_K); 
+                      delay(2500);
+                      lcd.clear();                                          
+                                 
+                      if(bluedata == 0){
+                        Serial.println("Route not selected!");
+                        TTPAFC.publish("Route not selected!");
+                        lcd.setCursor(5,0);
+                        lcd.print("Route");
+                        lcd.setCursor(2,1);
+                        lcd.print("Not Selected");
+                        delay(2500);
+                        lcd.clear();                 
+                        break; 
+                      }
+                      if(bluedata == 1){
+                        int Balance_X = Available_Balance_E - route1_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                            
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 2){
+                        int Balance_X = Available_Balance_E - route2_ticket ;
+                        if(Balance_X >=0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 3){
+                        int Balance_X = Available_Balance_E - route3_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 4){
+                        int Balance_X = Available_Balance_E - route4_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 5){
+                        int Balance_X = Available_Balance_E - route5_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 6){
+                        int Balance_X = Available_Balance_E - route6_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }                                               
+                      if(bluedata == 7){
+                        int Balance_X = Available_Balance_E - route7_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 8){
+                        int Balance_X = Available_Balance_E - route8_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 9){
+                        int Balance_X = Available_Balance_E - route9_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 10){
+                        int Balance_X = Available_Balance_E - route10_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 11){
+                        int Balance_X = Available_Balance_E - route11_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 12){
+                        int Balance_X = Available_Balance_E - route12_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                       if(bluedata == 13){
+                        int Balance_X = Available_Balance_E - route13_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                       if(bluedata == 14){
+                        int Balance_X = Available_Balance_E - route14_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 15){
+                        int Balance_X = Available_Balance_E - route15_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 16){
+                        int Balance_X = Available_Balance_E - route16_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 17){
+                        int Balance_X = Available_Balance_E - route17_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 18){
+                        int Balance_X = Available_Balance_E - route18_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 19){
+                        int Balance_X = Available_Balance_E - route19_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
+                        break; 
+                      }
+                      else {
+                            Serial.println(Message_T);
+                            Serial.println(Message_R);
+                            
+                            TTPAFC.publish(Message_R);
+                            TTPAFC.publish(Message_T);
+                                                        
+                            lcd.setCursor(0,0);
+                            lcd.print("Deficient  Fund!");
+                            lcd.setCursor(0,1);
+                            lcd.print("Top-up your card");
+                            delay(2000);
+                            lcd.clear();
+                           }
+                      }
+                      if(bluedata == 20){
+                        int Balance_X = Available_Balance_E - route20_ticket ;
+                        if(Balance_X >= 0){
+                        EEPROM.write(3, Balance_X);
+                        EEPROM.commit();
+                        String Balance_A = String(Balance_X);
+                        String Message_L = Balance_A + BDT;
+                        String Message_Z = Message_C + Balance_A + BDT;
+                        const char* Message_X = Message_Z.c_str(); 
+                        Serial.println(Message_X);
+                        TTPAFC.publish(Message_X);
+                        
+                        lcd.setCursor(0,0);
+                        lcd.print("Current  balance");
+                        lcd.setCursor(0,1);
+                        lcd.print(Message_L); 
+                        delay(2000);
+                        lcd.clear();
                         break; 
                       }
                       else {
@@ -1969,7 +3189,7 @@ void loop()
                      lcd.setCursor(2,1);
                      lcd.print("Card:Invalid");
 
-                     delay(3000);
+                     delay(2500);
                      lcd.clear();
                     }                    
          break;
