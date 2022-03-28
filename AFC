@@ -36,7 +36,7 @@ byte readCard[4];
 String tagID = "";
 
 #define EEPROM_SIZE          12
-#define Message_G           "Welcome to Bangladesh Road Transportation AFC System."
+#define Message_G           "Welcome to Bangladesh Public Transportation AFC System."
 #define Message_I           "QR code invalid."
 #define Message_A           "Available balance : "
 #define Message_C           "Your current balance : "
@@ -45,6 +45,8 @@ String tagID = "";
 #define Message_S           "Account balance recharge successful!"
 #define BDT                 " BDT."
 
+int i          = 16;
+int ii         =  0; 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 int rstPIN = 27;
@@ -110,7 +112,7 @@ int route85_ticket = 10;
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                   
 #define AIO_USERNAME   "_Maverick_"
-#define AIO_KEY        "aio_tSyq44mUZwpZs9XDGfXU8GiVatdK"
+#define AIO_KEY        "aio_xxxxxxxxxxxxxxxxxxxxx"
 
   
 // BLUETOOTH CLIENT
@@ -197,6 +199,7 @@ void setup()
   EEPROM.put(1, 0);
   EEPROM.put(2, 85);
   EEPROM.put(3, 125);
+  EEPROM.put(4, 0);
     
  {
    xTaskCreatePinnedToCore(
@@ -219,15 +222,25 @@ void setup()
 void Loop0code( void * pvParameters ) {
   for(;;){         
           int distanceCm = ultrasonicSensor.measureDistanceCm(); 
-          if (distanceCm <= 10)
+          if (distanceCm <= 5)
            {
             SerialBT.println(50);
             SerialBT.println();            
         
             Serial.println(Message_G);
-            TTPAFC.publish(Message_G);;         
+            TTPAFC.publish(Message_G);
+
+            EEPROM.write(4, 1);
+            EEPROM.commit();
+
+            delay(10000);
           }
-          delay(2500);   
+          else
+          {
+           EEPROM.write(4, 0);
+           EEPROM.commit();
+           delay(1500); 
+          }   
         }
 }
 
@@ -244,6 +257,17 @@ void loop()
    int Available_Balance_A = EEPROM.read(0);
    int Available_Balance_X = EEPROM.read(2);
    int Available_Balance_E = EEPROM.read(3);
+   int Lcd_Display_Text    = EEPROM.read(4);
+
+   if(Lcd_Display_Text == 1)
+    {
+     lcd.setCursor(0,0); 
+     lcd.print("   Bangladesh   ");
+     lcd.setCursor(0,1);
+     lcd.print(Scroll_LCD_Left("Public Transportation AFC"));
+     delay(150);
+    }
+   else{}
   
    while(SerialBT.available())
    {
@@ -268,6 +292,9 @@ void loop()
     }
    
    else if (bluedata == 1) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Uttara' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");
@@ -295,6 +322,9 @@ void loop()
    }
   
    else if (bluedata == 2) {
+
+      lcd.clear();
+    
       Serial.println("Route selected 'Uttara' to 'Agargaon'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -321,6 +351,9 @@ void loop()
      }
 
    else if (bluedata == 3) {
+
+      lcd.clear();
+      
       Serial.println("Route selected 'Uttara' to 'Shahbag'.");
       Serial.println("Ticket rate : 60 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -347,6 +380,9 @@ void loop()
      }            
 
    else if (bluedata == 4) {
+    
+      lcd.clear();
+      
       Serial.println("Route selected 'Uttara' to 'Motijheel'.");
       Serial.println("Ticket rate : 70 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -373,6 +409,9 @@ void loop()
      }
 
    else if (bluedata == 5) {
+    
+      lcd.clear();
+      
       Serial.println("Route selected 'Mirpur-10' to 'Agargaon'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -400,6 +439,9 @@ void loop()
      }
 
    else if (bluedata == 6) {
+    
+      lcd.clear();
+      
       Serial.println("Route selected 'Mirpur-10' to 'Shahbag'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -426,6 +468,9 @@ void loop()
      }
 
     else if (bluedata == 7) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Mirpur-10' to 'Motijheel'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -452,6 +497,9 @@ void loop()
      }
 
     else if (bluedata == 8) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Mirpur-10' to 'Uttara'.");
       Serial.println("Ticket rate : 25 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -478,6 +526,9 @@ void loop()
      }
 
     else if (bluedata == 9) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Agargaon' to 'Shahbag'.");
       Serial.println("Ticket rate : 20 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -504,6 +555,9 @@ void loop()
      }
 
     else if (bluedata == 10) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Agargaon' to 'Motijheel'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -530,6 +584,9 @@ void loop()
      }
 
     else if (bluedata == 11) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Agargaon' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -556,6 +613,9 @@ void loop()
      }
 
     else if (bluedata == 12) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Agargaon' to 'Uttara'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -582,6 +642,9 @@ void loop()
      }
 
      else if (bluedata == 13) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Shahbag' to 'Motijheel'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -608,6 +671,9 @@ void loop()
      }                                  
 
      else if (bluedata == 14) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Shahbag' to 'Agargaon'.");
       Serial.println("Ticket rate : 20 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -634,6 +700,9 @@ void loop()
      }
 
      else if (bluedata == 15) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Shahbag' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 30 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -660,6 +729,9 @@ void loop()
      }
 
      else if (bluedata == 16) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Shahbag' to 'Uttara'.");
       Serial.println("Ticket rate : 60 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -686,6 +758,9 @@ void loop()
      }
 
      else if (bluedata == 17) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Motijheel' to 'Shahbag'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -712,6 +787,9 @@ void loop()
      }
 
       else if (bluedata == 18) {
+        
+      lcd.clear();
+      
       Serial.println("Route selected 'Motijheel' to 'Agargaon'.");
       Serial.println("Ticket rate : 25 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -738,6 +816,9 @@ void loop()
      }
 
       else if (bluedata == 19) {
+        
+      lcd.clear();
+      
       Serial.println("Route selected 'Motijheel' to 'Mirpur-10'.");
       Serial.println("Ticket rate : 40 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -764,6 +845,9 @@ void loop()
      }
 
       else if (bluedata == 20) {
+        
+      lcd.clear();
+      
       Serial.println("Route selected 'Motijheel' to 'Uttara'.");
       Serial.println("Ticket rate : 70 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -790,6 +874,9 @@ void loop()
      }                         
                             
    else if (bluedata == 21) {
+    
+      lcd.clear();
+      
       Serial.println("Passenger boarded at 'Shahbag' stop.");
       Serial.println("Passenger Name : A ");              
         
@@ -810,6 +897,9 @@ void loop()
       lcd.clear();  
       }
     else if (bluedata == 22) {
+      
+      lcd.clear();
+      
       Serial.println("Passenger boarded at 'Mirpur-10' stop.");
       Serial.println("Passenger Name : B ");              
         
@@ -831,6 +921,9 @@ void loop()
       
       }
     else if (bluedata == 23) {
+      
+      lcd.clear();
+      
       Serial.println("Passenger boarded at 'Uttara' stop.");
       Serial.println("Passenger Name : A ");              
         
@@ -851,6 +944,9 @@ void loop()
       lcd.clear();            
       }
     else if (bluedata == 24) {
+      
+      lcd.clear();
+      
       Serial.println("Passenger boarded at 'Cantonment' stop.");
       Serial.println("Passenger Name : B ");              
         
@@ -871,6 +967,9 @@ void loop()
       lcd.clear();        
       }
     else if (bluedata == 25) {
+      
+      lcd.clear();
+      
       Serial.println(Message_I);
       TTPAFC.publish(Message_I); 
 
@@ -881,6 +980,9 @@ void loop()
       }
       
     else if (bluedata == 45) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'RBGHS' to 'BCSIR'.");
       Serial.println("Ticket rate : 15 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -907,6 +1009,9 @@ void loop()
      }
      
     else if (bluedata == 65) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Airport_Terminal' to 'Purbachal_Terminal'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -933,6 +1038,9 @@ void loop()
      }
     
     else if (bluedata == 75) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'BCSIR' to 'RBGHS'.");
       Serial.println("Ticket rate : 15 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -959,6 +1067,9 @@ void loop()
      }
 
     else if (bluedata == 85) {
+      
+      lcd.clear();
+      
       Serial.println("Route selected 'Purbachal_Terminal' to 'Airport_Terminal'.");
       Serial.println("Ticket rate : 10 BDT."); 
       Serial.println("Swipe your card to pay the required amount. ");              
@@ -985,6 +1096,9 @@ void loop()
      }
            
     else if (bluedata == 50) {
+      
+      lcd.clear();
+      
 
       String Balance_X = String(Available_Balance_X);
       String Message_K = Balance_X + BDT;
@@ -992,19 +1106,19 @@ void loop()
       const char* Message_Y = Message_J.c_str();      
       
       Serial.println("Student Pass.");
-      Serial.println("Passenger Name : X ");
+      Serial.println("User name : X.");
       Serial.println(Message_Y);                    
       
       int route_x = EEPROM.read(1); 
         
       TTPAFC.publish("Student Pass.");
-      TTPAFC.publish("Passenger Name : X ");
+      TTPAFC.publish("User name : X.");
       TTPAFC.publish(Message_Y); 
 
       lcd.setCursor(2,0);
       lcd.print("Student Pass");
       lcd.setCursor(0,1);
-      lcd.print("Passenger Name:X"); 
+      lcd.print(" User name : X. "); 
       delay(2500);
       lcd.clear();
 
@@ -1801,6 +1915,9 @@ void loop()
     }     
    
     else if (bluedata == 100) {
+      
+      lcd.clear();
+      
       int Balance_X = Available_Balance_A + 100;
       EEPROM.write(0, Balance_X);
       EEPROM.commit();
@@ -1823,6 +1940,9 @@ void loop()
                     
                     if (tagID == User_A)
                     { 
+                      
+                      lcd.clear();
+      
                       Serial.println("User name : A.");
                       TTPAFC.publish("User name : A.");
                       String Balance_A = String(Available_Balance_A);
@@ -2700,6 +2820,9 @@ void loop()
 
                     else if (tagID == User_B)
                     { 
+                      
+                      lcd.clear();
+      
                       Serial.println("User name : B.");
                       TTPAFC.publish("User name : B.");
                       String Balance_A = String(Available_Balance_E);
@@ -3448,6 +3571,9 @@ void loop()
                    
                    else
                    {
+                    
+                    lcd.clear();
+      
                     Serial.println("Card:Invalid");
                     TTPAFC.publish("Card:Invalid");
                      
@@ -3510,3 +3636,21 @@ boolean getID()
   mfrc522.PICC_HaltA();
   return true;
 } 
+
+String Scroll_LCD_Left(String StrDisplay){
+  String result;
+  String StrProcess = "                " + StrDisplay + "                ";
+  result = StrProcess.substring(i,ii);
+  i++;
+  ii++;
+  if (i>StrProcess.length()){
+    i=16;
+    ii=0;
+  }
+  return result;
+}
+
+void Clear_Scroll_LCD_Left(){
+  i=16;
+  ii=0;
+}
